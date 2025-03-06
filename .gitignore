@@ -34,3 +34,4 @@ build/
 ### 기타 민감 정보 등 ###
 **/*merged.md
 src/main/resources/application-private.properties
+src/main/resources/initdata/acount.sql
