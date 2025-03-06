@@ -1,0 +1,8 @@
+# 데이터베이스 연결 정보 (server.db.url 은 실제 주소로 변경 후 사용)
+local.db.url=jdbc:oracle:thin:@localhost:1521:xe
+server.db.url=jdbc:oracle:thin:@34.25.255.10:1521:xe
+db.username=your_username
+db.password=your_password
+
+# 현재 사용할 DB 선택 (local 또는 server)
+active.db.profile=local
