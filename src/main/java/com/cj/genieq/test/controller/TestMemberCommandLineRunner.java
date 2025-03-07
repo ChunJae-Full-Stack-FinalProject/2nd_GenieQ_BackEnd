@@ -31,7 +31,6 @@ class TestMemberCommandLineRunner implements CommandLineRunner {
             }
         }
         sc.close();
-        System.out.println("프로그램 종료");
-        System.exit(0);
+        System.out.println("CLI 테스트 종료.");
     }
 }

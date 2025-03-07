@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/api/test/members")
+@RequestMapping("/api/test")
 @RequiredArgsConstructor
 public class TestMemberController {
 
@@ -24,17 +24,9 @@ public class TestMemberController {
         return ResponseEntity.ok(member);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<String> createTestMember() {
-        // 테스트용 멤버 생성
-        TestMember testMember = TestMember.builder()
-                .name("테스트회원")
-                .age(25)
-                .birthday(LocalDate.of(1999, 3, 7))
-                .build();
-
-        // 여기서는 단순히 성공 메시지만 반환
-        // 실제로는 저장 로직이 필요합니다
-        return ResponseEntity.ok("테스트 멤버 생성 성공!");
+    @PostMapping
+    public ResponseEntity<TestMember> createTestMember(@RequestBody TestMember member) {
+        TestMember savedMember = service.saveMember(member);
+        return ResponseEntity.ok(savedMember); // 저장된 회원 정보를 응답으로 반환 (생성된 ID 포함)
     }
 }
