@@ -1,4 +1,4 @@
-package com.cj.genieq.test.model.dto;
+package com.cj.genieq.test.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;

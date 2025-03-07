@@ -1,8 +1,8 @@
-package com.cj.genieq.test.model.service;
+package com.cj.genieq.test.service;
 
-import com.cj.genieq.test.model.dto.TestMember;
-import com.cj.genieq.test.model.entity.TestMemberEntity;
-import com.cj.genieq.test.model.repository.TestMemberRepository;
+import com.cj.genieq.test.dto.TestMember;
+import com.cj.genieq.test.entity.TestMemberEntity;
+import com.cj.genieq.test.repository.TestMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,8 @@ public class TestMemberServiceImpl implements TestMemberService{
     @Override
     public TestMember saveMember(TestMember member) {
         TestMemberEntity entity = TestMemberEntity.fromTestMember(member);
-        return repository.save(entity).toTestMember();
+        TestMember memberDTO = repository.save(entity).toTestMember();
+        return memberDTO;
     }
 
     @Override

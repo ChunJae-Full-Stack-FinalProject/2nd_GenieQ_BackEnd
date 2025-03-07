@@ -1,6 +1,6 @@
-package com.cj.genieq.test.model.entity;
+package com.cj.genieq.test.entity;
 
-import com.cj.genieq.test.model.dto.TestMember;
+import com.cj.genieq.test.dto.TestMember;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
