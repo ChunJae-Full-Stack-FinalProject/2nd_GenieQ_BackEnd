@@ -1,11 +1,9 @@
-package com.cj.genieq.test.model.repository;
+package com.cj.genieq.test.repository;
 
-import com.cj.genieq.test.model.entity.TestMemberEntity;
-import org.springframework.data.domain.Example;
+import com.cj.genieq.test.entity.TestMemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository

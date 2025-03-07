@@ -1,12 +1,10 @@
 package com.cj.genieq.test.controller;
 
-import com.cj.genieq.test.model.dto.TestMember;
-import com.cj.genieq.test.model.service.TestMemberService;
+import com.cj.genieq.test.dto.TestMember;
+import com.cj.genieq.test.service.TestMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/test")
