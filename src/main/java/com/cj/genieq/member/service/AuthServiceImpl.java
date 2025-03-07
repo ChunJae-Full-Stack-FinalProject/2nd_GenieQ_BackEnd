@@ -1,4 +1,4 @@
 package com.cj.genieq.member.service;
 
-public class MemberServiceImpl {
+public class AuthServiceImpl {
 }
