@@ -21,6 +21,8 @@ public class SecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 요청에 대한 권한 설정
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/configuration/**").permitAll() // Swagger 허용
+                        .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll() // API 요청에 대한 접근 허용
                         .requestMatchers("/auth/**").permitAll() // 회원 인증
                         .requestMatchers("/info/**").permitAll() // 회원 정보
