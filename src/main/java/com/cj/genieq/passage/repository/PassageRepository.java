@@ -1,4 +1,10 @@
 package com.cj.genieq.passage.repository;
 
-public class PassageRepository {
+import com.cj.genieq.passage.entity.PassageEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface PassageRepository extends JpaRepository<PassageEntity,Long> {
+
 }
