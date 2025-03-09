@@ -1,7 +1,9 @@
 package com.cj.genieq.member.controller;
 
+import com.cj.genieq.member.dto.request.LoingReuestDto;
 import com.cj.genieq.member.dto.request.SignUpRequestDto;
 import com.cj.genieq.member.service.AuthService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +32,11 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
 
 
+    }
+
+    @PostMapping("/select/login")
+    public ResponseEntity<?> login(@RequestBody LoingReuestDto loinReuestDto, HttpSession session){
+        authService.login(loinReuestDto.getMemEmail(), loinReuestDto.getMemPassword(), session);
+        return ResponseEntity.ok().body("로그인 성공");
     }
 }

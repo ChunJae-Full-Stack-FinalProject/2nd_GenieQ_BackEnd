@@ -3,6 +3,7 @@ package com.cj.genieq.member.service;
 import com.cj.genieq.member.dto.request.SignUpRequestDto;
 import com.cj.genieq.member.entity.MemberEntity;
 import com.cj.genieq.member.repository.MemberRepository;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,5 +44,21 @@ public class AuthServiceImpl implements AuthService {
 
         // db에 저장 처리
         memberRepository.save(member);
+    }
+
+    @Override
+    // HttpSession은 세션을 관리하기 위한 인터페이스. 사용자가 웹 서버에 접속할 때부터 연결이 종료될 때까지 유지되는 상태 정보를 저장하는데 사용
+    public void login(String memEmail, String memPassword, HttpSession session) {
+        //이메일로 사용자 조회
+        MemberEntity member = memberRepository.findByMemEmail(memEmail)
+                .orElseThrow(()-> new IllegalArgumentException("이메일이 존재하지 않습니다."));
+
+        //비밀번호 검증
+        if(!passwordEncoder.matches(memPassword, member.getMemPassword())){
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        //세션에 사용자 정보 저장
+        session.setAttribute("LOGIN_USER", member);
     }
 }
