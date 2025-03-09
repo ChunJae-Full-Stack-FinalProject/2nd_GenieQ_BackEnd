@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/form/**").permitAll() // 문항형식
                         .requestMatchers("/ques/**").permitAll() // 문항
                         .requestMatchers("/noti/**").permitAll() // 공지
+                        .requestMatchers("/api/usag/**").permitAll() // 이용내역
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
                 )
                 .build();
