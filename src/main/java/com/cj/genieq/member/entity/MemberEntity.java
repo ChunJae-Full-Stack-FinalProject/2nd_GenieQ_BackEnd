@@ -7,6 +7,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import com.cj.genieq.usage.entity.UsageEntity;
+
+import java.util.ArrayList;
+import java.util.List;
+
 @Table(name = "MEMBER")
 @Entity // jpa에서 이 클래스가 db의 테이블과 매핑됨.(db에 테이블을 자동 생성)
 @SequenceGenerator(
@@ -43,4 +48,6 @@ public class MemberEntity {
     @Column(name = "MEM_IS_DELETED", nullable = false)
     private int MEMISDELETED;
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<UsageEntity> usages = new ArrayList<>();
 }
