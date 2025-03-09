@@ -7,7 +7,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
@@ -24,7 +31,7 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/configuration/**").permitAll() // Swagger 허용
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll() // API 요청에 대한 접근 허용
-                        .requestMatchers("/auth/**").permitAll() // 회원 인증
+                        .requestMatchers("/api/auth/**").permitAll() // 회원 인증
                         .requestMatchers("/info/**").permitAll() // 회원 정보
                         .requestMatchers("/tick/**").permitAll() // 이용권
                         .requestMatchers("/paym/**").permitAll() // 결제
@@ -39,4 +46,10 @@ public class SecurityConfig {
                 .build();
 
     }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
 }
