@@ -74,11 +74,6 @@ public class PassageServiceImpl implements PassageService {
         int startRow = page * size;
         int endRow = startRow + size;
 
-        System.out.println("memCode = " + memCode);
-        System.out.println("searchKeyword = " + searchKeyword);
-        System.out.println("startRow = " + startRow);
-        System.out.println("endRow = " + endRow);
-
         List<PassageEntity> result = passageRepository
                 .findByMemCodeAndKeyword(memCode, searchKeyword, startRow, endRow);
 
@@ -86,7 +81,7 @@ public class PassageServiceImpl implements PassageService {
                 .map(passage -> PassageTitleListDto.builder()
                         .passageCode(passage.getPasCode())
                         .passageTitle(passage.getTitle())
-                        .subjectTitle(passage.getSubject().getSubType().name())
+                        .subjectKeyword(passage.getSubject().getSubKeyword())
                         .date(passage.getDate())
                         .favorite(passage.getIsFavorite())
                         .build())
