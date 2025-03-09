@@ -1,6 +1,7 @@
 package com.cj.genieq.passage.service;
 
-import com.cj.genieq.passage.dto.PassageRequestDto;
+import com.cj.genieq.passage.dto.PassageContentDto;
+import com.cj.genieq.passage.dto.response.PassageTitleListDto;
 import com.cj.genieq.passage.entity.PassageEntity;
 import com.cj.genieq.passage.repository.PassageRepository;
 import com.cj.genieq.subject.entity.SubjectEntity;
@@ -8,6 +9,8 @@ import com.cj.genieq.subject.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +21,7 @@ public class PassageServiceImpl implements PassageService {
 
     @Override
     @Transactional
-    public PassageRequestDto savePassage(PassageRequestDto passageDto) {
+    public PassageContentDto savePassage(PassageContentDto passageDto) {
         try {
             // 주제 enum 타입 변환
             SubjectEntity.SubjectType subjectType = SubjectEntity.SubjectType.valueOf(passageDto.getType());
@@ -39,7 +42,7 @@ public class PassageServiceImpl implements PassageService {
                     .title(passageDto.getTitle())
                     .content(passageDto.getContent())
                     .gist(passageDto.getGist())
-                    .favorite(0) // 기본값 설정
+                    .isFavorite(0) // 기본값 설정
                     .subject(subject)
                     .memCode(passageDto.getMemCode())
                     .build();
@@ -47,7 +50,7 @@ public class PassageServiceImpl implements PassageService {
             PassageEntity savedPassage = passageRepository.save(passage);
 
             // 저장 성공 시 PassageEntity → PassageRequestDto로 변환
-            return PassageRequestDto.builder()
+            return PassageContentDto.builder()
                     .passCode(savedPassage.getPasCode())
                     .title(savedPassage.getTitle())
                     .content(savedPassage.getContent())
@@ -61,5 +64,32 @@ public class PassageServiceImpl implements PassageService {
             e.printStackTrace(); // 예외 발생 시 출력
             return null;
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PassageTitleListDto> getPaginatedPassagesByTitle(Long memCode, String title, int page, int size) {
+        String searchKeyword = "%" + title + "%";
+
+        int startRow = page * size;
+        int endRow = startRow + size;
+
+        System.out.println("memCode = " + memCode);
+        System.out.println("searchKeyword = " + searchKeyword);
+        System.out.println("startRow = " + startRow);
+        System.out.println("endRow = " + endRow);
+
+        List<PassageEntity> result = passageRepository
+                .findByMemCodeAndKeyword(memCode, searchKeyword, startRow, endRow);
+
+        return result.stream()
+                .map(passage -> PassageTitleListDto.builder()
+                        .passageCode(passage.getPasCode())
+                        .passageTitle(passage.getTitle())
+                        .subjectTitle(passage.getSubject().getSubType().name())
+                        .date(passage.getDate())
+                        .favorite(passage.getIsFavorite())
+                        .build())
+                .toList();
     }
 }

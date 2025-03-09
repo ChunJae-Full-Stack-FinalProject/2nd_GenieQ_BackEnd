@@ -12,7 +12,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
                 .group("GenieQ")
-                .pathsToMatch("/api/**")
+                .pathsToMatch("/api/**", "/pass/**")
                 .build();
     }
 }

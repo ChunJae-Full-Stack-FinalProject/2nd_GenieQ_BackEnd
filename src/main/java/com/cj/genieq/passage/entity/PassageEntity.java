@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
@@ -30,8 +32,14 @@ public class PassageEntity {
     @Column(name = "PAS_GIST")
     private String gist;
 
-    @Column(name = "PAS_FAVORITE")
-    private Integer favorite;
+    @Column(name = "PAS_DATE")
+    private LocalDate date;
+
+    @Column(name = "PAS_IS_FAVORITE")
+    private Integer isFavorite;
+
+    @Column(name = "PAS_IS_DELETED")
+    private Integer isDeleted;
 
     @ManyToOne
     @JoinColumn(name = "SUB_CODE")

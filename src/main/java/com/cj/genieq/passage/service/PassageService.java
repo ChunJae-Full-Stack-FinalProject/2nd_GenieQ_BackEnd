@@ -1,7 +1,11 @@
 package com.cj.genieq.passage.service;
 
-import com.cj.genieq.passage.dto.PassageRequestDto;
+import com.cj.genieq.passage.dto.PassageContentDto;
+import com.cj.genieq.passage.dto.response.PassageTitleListDto;
+
+import java.util.List;
 
 public interface PassageService {
-    PassageRequestDto savePassage(PassageRequestDto passage);
+    PassageContentDto savePassage(PassageContentDto passage);
+    List<PassageTitleListDto> getPaginatedPassagesByTitle(Long memCode, String title, int page, int size);
 }

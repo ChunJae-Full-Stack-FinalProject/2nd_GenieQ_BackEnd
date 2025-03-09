@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @NoArgsConstructor
-public class PassageRequestDto {
+public class PassageContentDto {
     private Long passCode;
     private String type;
     private String keyword;
