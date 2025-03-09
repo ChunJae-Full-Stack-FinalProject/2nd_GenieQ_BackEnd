@@ -1,4 +1,30 @@
 package com.cj.genieq.passage.repository;
 
-public class PassageRepository {
+import com.cj.genieq.passage.entity.PassageEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+
+@Repository
+public interface PassageRepository extends JpaRepository<PassageEntity,Long> {
+    @Query(value = """
+        SELECT * FROM (
+            SELECT p.*, ROWNUM AS rn
+            FROM passage p
+            WHERE p.mem_code = :memCode
+            AND LOWER(p.pas_title) LIKE LOWER(:keyword)
+            AND p.pas_is_deleted = 0
+            AND ROWNUM <= :endRow
+        )
+        WHERE rn > :startRow
+        """, nativeQuery = true)
+    List<PassageEntity> findByMemCodeAndKeyword(
+            @Param("memCode") Long memCode,
+            @Param("keyword") String keyword,
+            @Param("startRow") int startRow,
+            @Param("endRow") int endRow);
 }
