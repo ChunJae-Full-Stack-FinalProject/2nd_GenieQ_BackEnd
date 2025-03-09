@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class PassageTitleListDto {
     private Long passageCode;
     private String passageTitle;
-    private String subjectTitle;
+    private String subjectKeyword;
     private LocalDate date;
     private Integer favorite;
 }
