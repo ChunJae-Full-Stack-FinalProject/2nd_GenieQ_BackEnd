@@ -1,6 +1,7 @@
 package com.cj.genieq.notice.service;
 
 import com.cj.genieq.notice.dto.response.NoticeListResponseDto;
+import com.cj.genieq.notice.dto.response.NoticeResponseDto;
 import com.cj.genieq.notice.entity.NoticeEntity;
 import com.cj.genieq.notice.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,5 +33,21 @@ public class NoticeServiceImpl implements NoticeService {
                 .toList();
 
         return result;
+    }
+
+    @Override
+    public NoticeResponseDto getNotice(Long notCode) {
+        NoticeEntity entity = noticeRepository.findById(notCode)
+                .orElseThrow(() -> new IllegalArgumentException("해당 공지사항이 없습니다."));
+
+        NoticeResponseDto notice = NoticeResponseDto.builder()
+                .notCode(entity.getNotCode())
+                .title(entity.getTitle())
+                .content(entity.getContent())
+                .date(entity.getDate())
+                .type(entity.getType())
+                .build();
+
+        return notice;
     }
 }

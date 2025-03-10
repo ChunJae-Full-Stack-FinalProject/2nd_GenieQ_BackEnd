@@ -1,6 +1,7 @@
 package com.cj.genieq.notice.controller;
 
 import com.cj.genieq.notice.dto.response.NoticeListResponseDto;
+import com.cj.genieq.notice.dto.response.NoticeResponseDto;
 import com.cj.genieq.notice.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,5 +26,12 @@ public class NoticeController {
         List<NoticeListResponseDto> notices = noticeService.getNoticeList(type, page, size);
 
         return ResponseEntity.ok().body(notices);
+    }
+
+    @GetMapping("/select/each")
+    public ResponseEntity<?> selectEach(@RequestParam Long notCode){
+        NoticeResponseDto notice = noticeService.getNotice(notCode);
+
+        return ResponseEntity.ok().body(notice);
     }
 }
