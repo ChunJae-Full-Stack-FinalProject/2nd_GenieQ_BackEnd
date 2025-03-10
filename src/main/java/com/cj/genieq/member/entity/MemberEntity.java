@@ -46,7 +46,7 @@ public class MemberEntity {
     private String memType;
 
     @Column(name = "MEM_IS_DELETED", nullable = false)
-    private int MEMISDELETED;
+    private int memIsDeleted;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<UsageEntity> usages = new ArrayList<>();
