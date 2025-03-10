@@ -82,4 +82,20 @@ public class AuthServiceImpl implements AuthService {
 
         session.invalidate(); //세션 만료 처리
     }
+
+    @Override
+    @Transactional
+    public void findPassword(String memEmail, String tempPassword){
+        //이메일로 사용자 조회
+        MemberEntity member = memberRepository.findByMemEmail(memEmail)
+                .orElseThrow(()->new IllegalArgumentException("이메일이 존재하지 않습니다."));
+
+        //임시 비밀번호로 업데이트
+        String encodePassword = passwordEncoder.encode(tempPassword);
+        member.setMemPassword(encodePassword);
+
+        //db에 비밀번호 저장
+        memberRepository.save(member);
+    }
+
 }
