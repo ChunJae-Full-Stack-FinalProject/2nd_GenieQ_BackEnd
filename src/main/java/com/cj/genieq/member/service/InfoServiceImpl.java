@@ -39,10 +39,7 @@ public class InfoServiceImpl implements InfoService {
 
     @Override
     public int getUsageBalance(Long memCode) {
-        int usageBalance = usageRepository.findBalanceByMemberCode(memCode)
-                .stream()
-                .findFirst()
-                .orElse(0);
+        int usageBalance = usageRepository.findLatestBalanceByMemberCode(memCode);
 
         return usageBalance;
     }

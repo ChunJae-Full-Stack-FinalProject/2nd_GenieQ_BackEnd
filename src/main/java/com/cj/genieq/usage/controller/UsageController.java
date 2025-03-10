@@ -7,10 +7,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,5 +34,17 @@ public class UsageController {
 
         List<UsageListResponseDto> usages = usageService.getUsageList(loginMember.getMemberCode(), startDate, endDate, page, size);
         return ResponseEntity.ok(usages);
+    }
+    
+    // 이용권 추가 및 차감에 따른 이용 내역 저장
+    // 서비스만 이용할 예정(해당 컨트롤러 사용 안함)
+    @PostMapping("/insert/each")
+    public ResponseEntity<?> insertEach(){
+        // 이용권 추가 시 사용
+        usageService.updateUsage(1L, 1, "이용권 차감");
+
+        // 이용권 차감 시 사용
+        usageService.updateUsage(1L, -50, "지문 생성");
+        return ResponseEntity.ok("차감 성공");
     }
 }

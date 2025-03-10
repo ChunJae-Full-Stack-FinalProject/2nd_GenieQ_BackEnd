@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Builder
@@ -27,7 +27,7 @@ public class UsageEntity {
     private String usaType; // 내역 종류
 
     @Column(name = "USA_DATE")
-    private LocalDate usaDate; // 내역 일자
+    private LocalDateTime usaDate; // 내역 일자
 
     @Column(name = "USA_COUNT")
     private int usaCount; // 내역 횟수

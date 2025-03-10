@@ -34,9 +34,17 @@ public interface UsageRepository extends JpaRepository<UsageEntity, Long> {
             @Param("startRow") int startRow,
             @Param("endRow") int endRow);
 
-    @Query("SELECT u.usaBalance FROM UsageEntity u WHERE u.member.memCode = :memberCode ORDER BY u.usaDate DESC")
-    List<Integer> findBalanceByMemberCode(@Param("memberCode") Long memberCode);
-
+        @Query(value = """
+        SELECT u.usa_balance
+        FROM (
+            SELECT u.usa_balance
+            FROM usage u
+            WHERE u.mem_code = :memCode
+            ORDER BY u.usa_date DESC
+        ) u
+        WHERE ROWNUM = 1
+    """, nativeQuery = true)
+        int findLatestBalanceByMemberCode(@Param("memCode") Long memCode);
 }
 
 
