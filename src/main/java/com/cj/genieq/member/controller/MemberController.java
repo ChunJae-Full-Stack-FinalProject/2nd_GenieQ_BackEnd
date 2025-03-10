@@ -54,8 +54,6 @@ public class MemberController {
     public ResponseEntity<?> selectEntire(HttpSession session){
         LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
 
-        System.out.println(loginMember);
-
         if (loginMember == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         } else {
@@ -63,5 +61,18 @@ public class MemberController {
 
             return ResponseEntity.ok().body(memberInfo);
         }
+    }
+
+    // 회원의 잔여 이용권 조회
+    @GetMapping("/info/select/ticket")
+    public ResponseEntity<?> selectTicket(HttpSession session){
+        LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
+
+        if (loginMember == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        int balance = infoService.getUsageBalance(loginMember.getMemberCode());
+        return ResponseEntity.ok(balance);
     }
 }
