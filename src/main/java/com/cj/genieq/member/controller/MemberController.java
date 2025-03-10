@@ -1,8 +1,6 @@
 package com.cj.genieq.member.controller;
 
-import com.cj.genieq.member.dto.request.LoginRequestDto;
-import com.cj.genieq.member.dto.request.SignUpRequestDto;
-import com.cj.genieq.member.dto.request.WithdrawRequestDto;
+import com.cj.genieq.member.dto.request.*;
 import com.cj.genieq.member.dto.response.LoginMemberResponseDto;
 import com.cj.genieq.member.dto.response.MemberInfoResponseDto;
 import com.cj.genieq.member.service.AuthService;
@@ -103,5 +101,31 @@ public class MemberController {
 
         int balance = infoService.getUsageBalance(loginMember.getMemberCode());
         return ResponseEntity.ok(balance);
+    }
+
+    @PatchMapping("/info/update/name")
+    public ResponseEntity<String> updateName(@RequestBody UpdateNameRequestDto updateNameRequestDto, HttpSession session){
+        infoService.updateName(updateNameRequestDto.getMemName(), session);
+        return ResponseEntity.ok("이름 수정 완료");
+    }
+
+    @PatchMapping("/info/update/type")
+    public ResponseEntity<String> updateType(@RequestBody UpdateTypeRequestDto updateTypeRequestDto, HttpSession session){
+        infoService.updateType(updateTypeRequestDto.getMemType(), session);
+        return ResponseEntity.ok("소속 수정 완료");
+    }
+
+    @PatchMapping("/info/update/password")
+    public ResponseEntity<String> updatePassword(
+            @RequestBody UpdatePasswordRequestDto updatePasswordRequestDto,
+            HttpSession session
+            ){
+        infoService.updatePassword(
+                updatePasswordRequestDto.getCurrentPassword(),
+                updatePasswordRequestDto.getNewPassword(),
+                updatePasswordRequestDto.getConfirmPassword(),
+                session
+        );
+        return ResponseEntity.ok("비밀번호 수정 완료");
     }
 }
