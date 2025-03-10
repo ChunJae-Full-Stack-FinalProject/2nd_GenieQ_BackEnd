@@ -1,5 +1,6 @@
 package com.cj.genieq.common.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +32,7 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/configuration/**").permitAll() // Swagger 허용
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll() // API 요청에 대한 접근 허용
-                        .requestMatchers("/api/auth/**").permitAll() // 회원 인증
+                        .requestMatchers("/auth/**").permitAll() // 회원 인증
                         .requestMatchers("/info/**").permitAll() // 회원 정보
                         .requestMatchers("/tick/**").permitAll() // 이용권
                         .requestMatchers("/paym/**").permitAll() // 결제
@@ -43,6 +44,15 @@ public class SecurityConfig {
                         .requestMatchers("/noti/**").permitAll() // 공지
                         .requestMatchers("/api/usag/**").permitAll() // 이용내역
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/api/auth/select/logout") // 로그아웃 URL 지정
+                        .invalidateHttpSession(true) // 세션 무효화
+                        .deleteCookies("JSESSIONID") // JSESSIONID 쿠키 삭제
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK);
+                            response.getWriter().write("로그아웃 성공 및 쿠키 삭제 완료");
+                        })
                 )
                 .build();
 
