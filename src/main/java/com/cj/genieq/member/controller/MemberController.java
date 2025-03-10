@@ -1,6 +1,6 @@
 package com.cj.genieq.member.controller;
 
-import com.cj.genieq.member.dto.request.LoingReuestDto;
+import com.cj.genieq.member.dto.request.LoginRequestDto;
 import com.cj.genieq.member.dto.request.SignUpRequestDto;
 import com.cj.genieq.member.dto.request.WithdrawRequestDto;
 import com.cj.genieq.member.dto.response.LoginMemberResponseDto;
@@ -10,9 +10,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import com.cj.genieq.member.service.InfoService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -49,8 +46,8 @@ public class MemberController {
     }
 
     @PostMapping("/auth/select/login")
-    public ResponseEntity<?> login(@RequestBody LoingReuestDto loinReuestDto, HttpSession session){
-        authService.login(loinReuestDto.getMemEmail(), loinReuestDto.getMemPassword(), session);
+    public ResponseEntity<?> login(@RequestBody LoginRequestDto loinRequestDto, HttpSession session){
+        authService.login(loinRequestDto.getMemEmail(), loinRequestDto.getMemPassword(), session);
         return ResponseEntity.ok().body("로그인 성공");
     }
 
