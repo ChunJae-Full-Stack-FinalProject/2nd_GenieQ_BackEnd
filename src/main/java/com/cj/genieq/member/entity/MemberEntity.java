@@ -28,7 +28,7 @@ public class MemberEntity {
     @Id //기본 키 지정
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqMemNo")
     @Column(name = "MEM_CODE")
-    private int memCode;
+    private Long memCode;
 
     @Column(name = "MEM_NAME", nullable = false)
     private String memName;
