@@ -12,4 +12,7 @@ public interface AuthService {
 
     // 로그인 처리 및 세션 저장 메서드
     void login(String email, String password, HttpSession session);
+
+    //회원탈퇴
+    void withdraw(String email, HttpSession session);
 }

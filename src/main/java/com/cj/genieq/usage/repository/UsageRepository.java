@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UsageRepository extends JpaRepository<UsageEntity, Long> {
@@ -33,4 +34,9 @@ public interface UsageRepository extends JpaRepository<UsageEntity, Long> {
             @Param("startRow") int startRow,
             @Param("endRow") int endRow);
 
+    @Query("SELECT u.usaBalance FROM UsageEntity u WHERE u.member.memCode = :memberCode ORDER BY u.usaDate DESC")
+    List<Integer> findBalanceByMemberCode(@Param("memberCode") Long memberCode);
+
 }
+
+

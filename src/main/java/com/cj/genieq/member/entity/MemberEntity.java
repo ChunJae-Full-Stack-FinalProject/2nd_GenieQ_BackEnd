@@ -28,7 +28,7 @@ public class MemberEntity {
     @Id //기본 키 지정
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqMemNo")
     @Column(name = "MEM_CODE")
-    private int memCode;
+    private Long memCode;
 
     @Column(name = "MEM_NAME", nullable = false)
     private String memName;
@@ -46,7 +46,7 @@ public class MemberEntity {
     private String memType;
 
     @Column(name = "MEM_IS_DELETED", nullable = false)
-    private int MEMISDELETED;
+    private int memIsDeleted;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<UsageEntity> usages = new ArrayList<>();

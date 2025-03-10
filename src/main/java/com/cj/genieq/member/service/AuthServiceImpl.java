@@ -1,9 +1,11 @@
 package com.cj.genieq.member.service;
 
 import com.cj.genieq.member.dto.request.SignUpRequestDto;
+import com.cj.genieq.member.dto.response.LoginMemberResponseDto;
 import com.cj.genieq.member.entity.MemberEntity;
 import com.cj.genieq.member.repository.MemberRepository;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -58,7 +60,26 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
+        LoginMemberResponseDto loginMember = LoginMemberResponseDto.builder()
+                                                .memberCode(member.getMemCode())
+                                                .name(member.getMemName())
+                                                .email(member.getMemEmail())
+                                                .build();
+
         //세션에 사용자 정보 저장
-        session.setAttribute("LOGIN_USER", member);
+        session.setAttribute("LOGIN_USER", loginMember);
+    }
+
+    @Override
+    @Transactional
+    public void withdraw(String memEmail,  HttpSession session){
+        //이메일로 사용자 조회
+        MemberEntity member = memberRepository.findByMemEmail(memEmail)
+                .orElseThrow(()-> new IllegalArgumentException("회원이 존재하지 않습니다."));
+
+        member.setMemIsDeleted(1);
+        memberRepository.save(member);
+
+        session.invalidate(); //세션 만료 처리
     }
 }

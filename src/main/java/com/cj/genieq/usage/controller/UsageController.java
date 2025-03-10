@@ -1,8 +1,11 @@
 package com.cj.genieq.usage.controller;
 
+import com.cj.genieq.member.dto.response.LoginMemberResponseDto;
 import com.cj.genieq.usage.dto.response.UsageListResponseDto;
 import com.cj.genieq.usage.service.UsageService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,13 +24,18 @@ public class UsageController {
 
     @GetMapping("/select/list")
     public ResponseEntity<?> selectList(
-            @RequestParam("memCode") Long memCode,
             @RequestParam("startDate")LocalDate startDate,
             @RequestParam("endDate") LocalDate endDate,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "12") int size){
+            @RequestParam(defaultValue = "12") int size,
+            HttpSession session){
+        LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
 
-        List<UsageListResponseDto> usages = usageService.getUsageList(memCode, startDate, endDate, page, size);
+        if (loginMember == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        List<UsageListResponseDto> usages = usageService.getUsageList(loginMember.getMemberCode(), startDate, endDate, page, size);
         return ResponseEntity.ok(usages);
     }
 }

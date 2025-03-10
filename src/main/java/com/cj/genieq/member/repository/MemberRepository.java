@@ -25,5 +25,8 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Integer> {
     //Optional<MemberEntity>은 반환 값이 있을 수도 있고 없을 수도 있으므로 Optional 사용
     Optional<MemberEntity> findByMemEmail(String memEmail);
 
+    // memCode와 일치하는 MemberEntity 조회
+    Optional<MemberEntity> findByMemCode(Long memCode);
+
 
 }
