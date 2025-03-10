@@ -2,6 +2,7 @@ package com.cj.genieq.member.controller;
 
 import com.cj.genieq.member.dto.request.LoingReuestDto;
 import com.cj.genieq.member.dto.request.SignUpRequestDto;
+import com.cj.genieq.member.dto.request.WithdrawRequestDto;
 import com.cj.genieq.member.service.AuthService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController //컨트롤러에서 반환된 값이 JSON 형태로 응답됨
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor //자동 생성자 주입
 
 public class MemberController {
@@ -38,5 +39,11 @@ public class MemberController {
     public ResponseEntity<?> login(@RequestBody LoingReuestDto loinReuestDto, HttpSession session){
         authService.login(loinReuestDto.getMemEmail(), loinReuestDto.getMemPassword(), session);
         return ResponseEntity.ok().body("로그인 성공");
+    }
+
+    @PutMapping("/remove/withdrawal")
+    public ResponseEntity<?> withdraw(@RequestBody WithdrawRequestDto withdrawRequestDto, HttpSession session){
+        authService.withdraw(withdrawRequestDto.getMemEmail(), session);
+        return ResponseEntity.ok("탈퇴완료");
     }
 }

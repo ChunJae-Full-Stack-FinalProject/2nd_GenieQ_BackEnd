@@ -31,7 +31,7 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/configuration/**").permitAll() // Swagger 허용
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll() // API 요청에 대한 접근 허용
-                        .requestMatchers("/api/auth/**").permitAll() // 회원 인증
+                        .requestMatchers("/auth/**").permitAll() // 회원 인증
                         .requestMatchers("/info/**").permitAll() // 회원 정보
                         .requestMatchers("/tick/**").permitAll() // 이용권
                         .requestMatchers("/paym/**").permitAll() // 결제
@@ -52,5 +52,18 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 메서드 설정
+        configuration.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
+        configuration.setAllowCredentials(true); // 자격 증명 허용 (세션, 쿠키 등)
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 
 }
