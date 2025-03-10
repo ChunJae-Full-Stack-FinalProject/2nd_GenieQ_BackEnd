@@ -1,5 +1,6 @@
 package com.cj.genieq.common.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,6 +44,15 @@ public class SecurityConfig {
                         .requestMatchers("/noti/**").permitAll() // 공지
                         .requestMatchers("/api/usag/**").permitAll() // 이용내역
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/api/auth/select/logout") // 로그아웃 URL 지정
+                        .invalidateHttpSession(true) // 세션 무효화
+                        .deleteCookies("JSESSIONID") // JSESSIONID 쿠키 삭제
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK);
+                            response.getWriter().write("로그아웃 성공 및 쿠키 삭제 완료");
+                        })
                 )
                 .build();
 

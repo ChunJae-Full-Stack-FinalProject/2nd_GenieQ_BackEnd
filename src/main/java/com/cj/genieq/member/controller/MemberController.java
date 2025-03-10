@@ -4,10 +4,14 @@ import com.cj.genieq.member.dto.request.LoingReuestDto;
 import com.cj.genieq.member.dto.request.SignUpRequestDto;
 import com.cj.genieq.member.dto.request.WithdrawRequestDto;
 import com.cj.genieq.member.service.AuthService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController //컨트롤러에서 반환된 값이 JSON 형태로 응답됨
@@ -36,7 +40,7 @@ public class MemberController {
     }
 
     @PostMapping("/select/login")
-    public ResponseEntity<?> login(@RequestBody LoingReuestDto loinReuestDto, HttpSession session){
+    public ResponseEntity<?> login(@RequestBody LoginRequestDto loinReuestDto, HttpSession session){
         authService.login(loinReuestDto.getMemEmail(), loinReuestDto.getMemPassword(), session);
         return ResponseEntity.ok().body("로그인 성공");
     }
@@ -46,4 +50,24 @@ public class MemberController {
         authService.withdraw(withdrawRequestDto.getMemEmail(), session);
         return ResponseEntity.ok("탈퇴완료");
     }
+
+    @PostMapping("/select/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate(); // 세션 무효화
+        }
+
+        SecurityContextHolder.clearContext(); // Security 컨텍스트 삭제
+
+        // JSESSIONID 쿠키 삭제
+        Cookie cookie = new Cookie("JSESSIONID", null);
+        cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().body("로그아웃 성공");
+    }
+
 }
