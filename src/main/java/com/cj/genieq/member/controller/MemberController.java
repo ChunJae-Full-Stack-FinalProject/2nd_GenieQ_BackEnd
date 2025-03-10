@@ -1,6 +1,6 @@
 package com.cj.genieq.member.controller;
 
-import com.cj.genieq.member.dto.request.LoingReuestDto;
+import com.cj.genieq.member.dto.request.LoginRequestDto;
 import com.cj.genieq.member.dto.request.SignUpRequestDto;
 import com.cj.genieq.member.dto.request.WithdrawRequestDto;
 import com.cj.genieq.member.service.AuthService;
@@ -40,8 +40,8 @@ public class MemberController {
     }
 
     @PostMapping("/select/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto loinReuestDto, HttpSession session){
-        authService.login(loinReuestDto.getMemEmail(), loinReuestDto.getMemPassword(), session);
+    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto, HttpSession session){
+        authService.login(loginRequestDto.getMemEmail(), loginRequestDto.getMemPassword(), session);
         return ResponseEntity.ok().body("로그인 성공");
     }
 
