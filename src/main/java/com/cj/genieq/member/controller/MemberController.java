@@ -2,6 +2,7 @@ package com.cj.genieq.member.controller;
 
 import com.cj.genieq.member.dto.request.LoginRequestDto;
 import com.cj.genieq.member.dto.request.SignUpRequestDto;
+import com.cj.genieq.member.dto.request.UpdateNameRequestDto;
 import com.cj.genieq.member.dto.request.WithdrawRequestDto;
 import com.cj.genieq.member.dto.response.LoginMemberResponseDto;
 import com.cj.genieq.member.dto.response.MemberInfoResponseDto;
@@ -103,5 +104,11 @@ public class MemberController {
 
         int balance = infoService.getUsageBalance(loginMember.getMemberCode());
         return ResponseEntity.ok(balance);
+    }
+
+    @PatchMapping("/info/update/name")
+    public ResponseEntity<String> updateName(@RequestBody UpdateNameRequestDto updateNameRequestDto, HttpSession session){
+        infoService.updateName(updateNameRequestDto.getMemName(), session);
+        return ResponseEntity.ok("이름 수정 완료");
     }
 }
