@@ -32,29 +32,29 @@ INSERT INTO SUBJECT (SUB_CODE, SUB_TYPE, SUB_KEYWORD)
 VALUES (SEQ_SUB_NO.nextval, '기술', '인공지능 기술의 발전 과정과 사회적 영향');
 
 -- 지문 데이터 추가
-INSERT INTO PASSAGE (PAS_CODE, PAS_TITLE, PAS_CONTENT, PAS_GIST, PAS_DATE, PAS_IS_FAVORITE, PAS_IS_DELETED, MEM_CODE, SUB_CODE)
+INSERT INTO PASSAGE (PAS_CODE, PAS_TITLE, PAS_CONTENT, PAS_GIST, PAS_DATE, PAS_IS_FAVORITE, PAS_IS_DELETED, PAS_IS_GENERATED, MEM_CODE, SUB_CODE)
 VALUES (SEQ_PAS_NO.nextval, '현대 문학의 흐름', '현대 문학은 19세기 말부터 현재까지 이어져온 다양한 문학적 움직임을 포괄합니다. 현대 문학은 전통적인 문학 형식과 구분되는 특징을 가지고 있으며, 산업화, 세계대전, 정보화 등의 사회적 변화를 반영합니다. 근대화 과정에서 발생한 개인의 소외, 실존적 문제, 정체성 탐구 등이 주요 주제로 등장하였습니다. 특히 20세기 초반의 모더니즘은 의식의 흐름 기법, 파편화된 서술, 비선형적 구조 등 혁신적인 기법을 도입했습니다. 이후 포스트모더니즘으로 넘어오면서 메타픽션, 상호텍스트성, 장르의 해체 등이 두드러지게 나타납니다.',
-        '현대 문학의 특징과 발전 과정', TO_DATE('2023-10-10', 'YYYY-MM-DD'), 1, 0, 1, 1);
+        '현대 문학의 특징과 발전 과정', TO_DATE('2023-10-10', 'YYYY-MM-DD'), 1, 0, 1, 1,1);
 
-INSERT INTO PASSAGE (PAS_CODE, PAS_TITLE, PAS_CONTENT, PAS_GIST, PAS_DATE, PAS_IS_FAVORITE, PAS_IS_DELETED, MEM_CODE, SUB_CODE)
+INSERT INTO PASSAGE (PAS_CODE, PAS_TITLE, PAS_CONTENT, PAS_GIST, PAS_DATE, PAS_IS_FAVORITE, PAS_IS_DELETED, PAS_IS_GENERATED, MEM_CODE, SUB_CODE)
 VALUES (SEQ_PAS_NO.nextval, '인상주의 미술의 특징', '인상주의는 19세기 후반 프랑스에서 시작된 미술 운동으로, 전통적인 미술 기법에서 벗어나 빛과 색채의 순간적인 인상을 포착하고자 했습니다. 인상주의 화가들은 실외에서 직접 그림을 그리며 자연광의 변화를 관찰했고, 빠른 붓터치와 밝은 색채를 사용했습니다. 모네, 르누아르, 드가와 같은 화가들이 대표적이며, 이들의 작품은 당시 미술계에서 큰 논란을 일으켰지만 현대 미술의 발전에 중요한 토대가 되었습니다.',
-        '인상주의 미술의 탄생과 주요 특징', TO_DATE('2023-11-12', 'YYYY-MM-DD'), 0, 0, 1, 1);
+        '인상주의 미술의 탄생과 주요 특징', TO_DATE('2023-11-12', 'YYYY-MM-DD'), 0, 0, 1, 1,1);
 
-INSERT INTO PASSAGE (PAS_CODE, PAS_TITLE, PAS_CONTENT, PAS_GIST, PAS_DATE, PAS_IS_FAVORITE, PAS_IS_DELETED, MEM_CODE, SUB_CODE)
+INSERT INTO PASSAGE (PAS_CODE, PAS_TITLE, PAS_CONTENT, PAS_GIST, PAS_DATE, PAS_IS_FAVORITE, PAS_IS_DELETED, PAS_IS_GENERATED, MEM_CODE, SUB_CODE)
 VALUES (SEQ_PAS_NO.nextval, '현대 경제학의 기본 원리', '경제학은 희소한 자원을 어떻게 배분할 것인가에 대한 학문으로, 현대 경제학은 크게 미시경제학과 거시경제학으로 나뉩니다. 미시경제학은 개인과 기업의 의사결정과 시장 작동 원리를 연구하며, 거시경제학은 국가 경제의 총체적 움직임과 정책을 다룹니다. 경제학의 기본 원리에는 기회비용, 한계효용, 수요와 공급, 균형가격 등의 개념이 있으며, 이러한 개념들은 합리적 선택과 자원의 효율적 배분을 이해하는 데 필수적입니다.',
-        '경제학의 기본 개념과 원리', TO_DATE('2023-12-30', 'YYYY-MM-DD'), 1, 1, 1, 2);
+        '경제학의 기본 개념과 원리', TO_DATE('2023-12-30', 'YYYY-MM-DD'), 1, 1, 1, 1, 2);
 
-INSERT INTO PASSAGE (PAS_CODE, PAS_TITLE, PAS_CONTENT, PAS_GIST, PAS_DATE, PAS_IS_FAVORITE, PAS_IS_DELETED, MEM_CODE, SUB_CODE)
+INSERT INTO PASSAGE (PAS_CODE, PAS_TITLE, PAS_CONTENT, PAS_GIST, PAS_DATE, PAS_IS_FAVORITE, PAS_IS_DELETED, PAS_IS_GENERATED, MEM_CODE, SUB_CODE)
 VALUES (SEQ_PAS_NO.nextval, '한국 전통문화의 현대적 계승', '한국의 전통문화는 역사적 깊이와 독특한 특성을 지니고 있으며, 현대사회에서도 다양한 형태로 계승되고 있습니다. 전통 음악, 무용, 공예, 건축 등은 현대적 해석과 창조적 변형을 통해 새로운 가치를 창출하고 있습니다. 특히 한류 열풍과 함께 전통문화의 요소가 대중문화에 접목되면서 국내외적으로 큰 관심을 받고 있습니다. 이러한 전통과 현대의 만남은 문화적 정체성을 유지하면서도 시대적 변화에 적응하는 중요한 과정입니다.',
-        '전통문화의 현대적 변용과 의의', TO_DATE('2024-01-15', 'YYYY-MM-DD'), 1, 0, 1, 3);
+        '전통문화의 현대적 변용과 의의', TO_DATE('2024-01-15', 'YYYY-MM-DD'), 1, 0, 1, 0, 3);
 
-INSERT INTO PASSAGE (PAS_CODE, PAS_TITLE, PAS_CONTENT, PAS_GIST, PAS_DATE, PAS_IS_FAVORITE, PAS_IS_DELETED, MEM_CODE, SUB_CODE)
+INSERT INTO PASSAGE (PAS_CODE, PAS_TITLE, PAS_CONTENT, PAS_GIST, PAS_DATE, PAS_IS_FAVORITE, PAS_IS_DELETED, PAS_IS_GENERATED, MEM_CODE, SUB_CODE)
 VALUES (SEQ_PAS_NO.nextval, '양자역학의 기본 개념', '양자역학은 20세기 초에 발전한 물리학 이론으로, 원자 및 아원자 수준의 현상을 설명합니다. 고전역학으로는 설명할 수 없었던 블랙바디 복사, 광전효과, 원자 스펙트럼 등의 현상을 해석하기 위해 등장했습니다. 양자역학의 핵심 개념에는 파동-입자 이중성, 불확정성 원리, 양자 중첩 상태 등이 있으며, 이러한 개념들은 우리의 직관과 일상 경험에 위배되는 경우가 많습니다. 그럼에도 불구하고 양자역학은 현대 과학기술의 발전에 결정적인 역할을 하고 있습니다.',
-        '양자역학의 탄생 배경과 주요 원리', TO_DATE('2024-04-17', 'YYYY-MM-DD'), 0, 1, 1, 4);
+        '양자역학의 탄생 배경과 주요 원리', TO_DATE('2024-04-17', 'YYYY-MM-DD'), 0, 1, 1, 1,4);
 
-INSERT INTO PASSAGE (PAS_CODE, PAS_TITLE, PAS_CONTENT, PAS_GIST, PAS_DATE, PAS_IS_FAVORITE, PAS_IS_DELETED, MEM_CODE, SUB_CODE)
+INSERT INTO PASSAGE (PAS_CODE, PAS_TITLE, PAS_CONTENT, PAS_GIST, PAS_DATE, PAS_IS_FAVORITE, PAS_IS_DELETED, PAS_IS_GENERATED, MEM_CODE, SUB_CODE)
 VALUES (SEQ_PAS_NO.nextval, '인공지능의 발전과 미래', '인공지능(AI)은 인간의 학습, 추론, 지각, 문제 해결 능력 등을 컴퓨터로 구현하는 기술입니다. 초기의 단순한 알고리즘에서 시작하여 머신러닝, 딥러닝을 거쳐 현재는 다양한 분야에서 혁신을 일으키고 있습니다. 특히 자연어 처리, 컴퓨터 비전, 패턴 인식 등의 영역에서 비약적인 발전을 이루었으며, 의료, 금융, 교육, 교통 등 산업 전반에 적용되고 있습니다. 인공지능의 발전은 효율성과 편의성을 높이는 동시에 일자리 변화, 개인정보 보호, 윤리적 문제 등 새로운 과제를 제시하고 있습니다.',
-        '인공지능 기술의 발전 과정과 사회적 영향', TO_DATE('2024-11-18', 'YYYY-MM-DD'), 0, 0, 1, 5);
+        '인공지능 기술의 발전 과정과 사회적 영향', TO_DATE('2024-11-18', 'YYYY-MM-DD'), 0, 0, 1, 1,5);
 
 -- 문제 데이터 추가 (JSON 예시 데이터 활용)
 INSERT INTO QUESTION (QUE_CODE, QUE_QUERY, QUE_OPTION, QUE_ANSWER, PAS_CODE)
