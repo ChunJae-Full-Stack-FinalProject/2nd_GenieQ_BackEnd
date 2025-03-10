@@ -32,7 +32,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll() // API 요청에 대한 접근 허용
                         .requestMatchers("/api/auth/**").permitAll() // 회원 인증
-                        .requestMatchers("/info/**").permitAll() // 회원 정보
+                        .requestMatchers("/api/info/**").permitAll() // 회원 정보
                         .requestMatchers("/tick/**").permitAll() // 이용권
                         .requestMatchers("/paym/**").permitAll() // 결제
                         .requestMatchers("/subj/**").permitAll() // 지문주제
