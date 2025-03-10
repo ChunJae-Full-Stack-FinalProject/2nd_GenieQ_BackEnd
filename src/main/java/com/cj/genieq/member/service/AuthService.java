@@ -15,4 +15,8 @@ public interface AuthService {
 
     //회원탈퇴
     void withdraw(String email, HttpSession session);
+
+    //비밀번호 찾기
+    void findPassword(String memEmail, String tempPassword);
+
 }

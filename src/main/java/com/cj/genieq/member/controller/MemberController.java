@@ -128,4 +128,20 @@ public class MemberController {
         );
         return ResponseEntity.ok("비밀번호 수정 완료");
     }
+
+    @GetMapping("/auth/select/email")
+    public ResponseEntity<String> checkEmail(@RequestParam String email){
+        boolean isEmailExists = authService.checkEmailDuplicate(email);
+        if (isEmailExists) {
+            return ResponseEntity.ok("이메일이 존재합니다. 비밀번호 찾기를 진행합니다.");
+        }
+        return ResponseEntity.status(404).body("이메일이 존재하지 않습니다.");
+    }
+
+    @PutMapping("/auth/update/temporal")
+    public ResponseEntity<String> findPassword(@RequestBody FindPasswordRequestDto findPasswordRequestDto){
+        authService.findPassword(findPasswordRequestDto.getMemEmail(), findPasswordRequestDto.getTempPassword());
+        return ResponseEntity.ok("임시 비밀번호가 성공적으로 업데이트되었습니다.");
+
+    }
 }
