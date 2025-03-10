@@ -1,0 +1,59 @@
+SELECT * FROM MEMBER;
+SELECT * FROM NOTICE;
+SELECT * FROM PASSAGE;
+SELECT * FROM PAYMENT;
+SELECT * FROM QUESTION;
+SELECT * FROM TICKET;
+SELECT * FROM USAGE;
+
+------------------------------------------------------
+
+-- 회원 코드가 1인 회원이 저장한 삭제되지 않은 모든 지문 조회
+SELECT m.MEM_CODE, p.PAS_CODE, p.PAS_TITLE, p.PAS_DATE
+FROM MEMBER m
+         JOIN PASSAGE p ON m.MEM_CODE = p.MEM_CODE
+WHERE m.MEM_CODE = 1
+  AND p.PAS_IS_DELETED = 0
+ORDER BY p.PAS_DATE DESC;
+
+-- 회원 코드가 1인 회원이 저장한 '인문' 주제의 삭제되지 않은 지문 조회
+SELECT m.MEM_CODE, p.PAS_CODE, p.PAS_TYPE, p.PAS_TITLE
+FROM MEMBER m
+         JOIN PASSAGE p ON m.MEM_CODE = p.MEM_CODE
+WHERE m.MEM_CODE = 1
+  AND p.PAS_IS_DELETED = 0
+  AND p.PAS_TYPE = '인문';
+
+-- 회원 코드가 1인 회원이 저장한 삭제되지 않은 지문에 속한 삭제되지 않은 모든 문제 조회
+SELECT m.MEM_CODE, q.QUE_CODE, p.PAS_CODE, p.PAS_TITLE
+FROM MEMBER m
+         JOIN PASSAGE p ON m.MEM_CODE = p.MEM_CODE
+         JOIN QUESTION q ON p.PAS_CODE = q.PAS_CODE
+WHERE m.MEM_CODE = 1
+  AND p.PAS_IS_DELETED = 0
+ORDER BY p.PAS_CODE;
+
+-- 회원 코드가 1인 회원이 즐겨찾기한 삭제되지 않은 지문과 관련 정보 조회
+SELECT m.MEM_CODE, p.PAS_CODE, p.PAS_TITLE, p.PAS_TYPE, p.PAS_DATE
+FROM MEMBER m
+         JOIN PASSAGE p ON m.MEM_CODE = p.MEM_CODE
+WHERE m.MEM_CODE = 1
+  AND p.PAS_IS_DELETED = 0
+  AND p.PAS_IS_FAVORITE = 1
+ORDER BY p.PAS_DATE DESC;
+
+-- 회원 코드가 1인 회원의 2023년 10월 활동 내역 조회
+SELECT m.MEM_CODE, m.MEM_NAME, u.USA_TYPE, u.USA_COUNT, u.USA_BALANCE, u.USA_DATE
+FROM MEMBER m
+         JOIN USAGE u ON m.MEM_CODE = u.MEM_CODE
+WHERE m.MEM_CODE = 1
+  AND u.USA_DATE BETWEEN TO_DATE('2023-10-01', 'YYYY-MM-DD') AND TO_DATE('2023-10-31', 'YYYY-MM-DD')
+ORDER BY u.USA_DATE;
+
+-- 회원 코드가 1인 회원의 모든 결제 내역과 구매한 이용권 정보 조회
+SELECT m.MEM_CODE, p.PAY_CODE, p.PAY_PRICE, p.PAY_DATE, t.TIC_NUMBER, t.TIC_PRICE
+FROM MEMBER m
+         JOIN PAYMENT p ON m.MEM_CODE = p.MEM_CODE
+         JOIN TICKET t ON p.TIC_CODE = t.TIC_CODE
+WHERE m.MEM_CODE = 1
+ORDER BY p.PAY_DATE DESC;
