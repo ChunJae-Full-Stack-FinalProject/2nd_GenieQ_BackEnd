@@ -8,4 +8,6 @@ public interface InfoService {
     MemberInfoResponseDto getMemberInfo(Long memCode);
     int getUsageBalance(Long memCode);
     void updateName(String memName, HttpSession session);
+    void updateType(String memType, HttpSession session);
+    void updatePassword(String currentPassword, String newPassword, String confirmPassword, HttpSession session);
 }
