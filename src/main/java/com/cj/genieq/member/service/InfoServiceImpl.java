@@ -16,7 +16,7 @@ public class InfoServiceImpl implements InfoService {
 
     @Override
     public MemberInfoResponseDto getMemberInfo(Long memCode) {
-        MemberEntity member = memberRepository.findByMemCode(memCode)
+        MemberEntity member = memberRepository.findById(memCode)
                 .orElseThrow(() -> new EntityNotFoundException("회원 정보가 존재하지 않습니다."));
 
         MemberInfoResponseDto memberInfo = MemberInfoResponseDto.builder()
