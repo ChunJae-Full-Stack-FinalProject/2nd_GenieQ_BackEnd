@@ -1,6 +1,8 @@
 package com.cj.genieq.passage.controller;
 
 import com.cj.genieq.passage.dto.PassageContentDto;
+import com.cj.genieq.passage.dto.request.PassageFavoriteRequestDto;
+import com.cj.genieq.passage.dto.response.PassageFavoriteResponseDto;
 import com.cj.genieq.passage.dto.response.PassageTitleListDto;
 import com.cj.genieq.passage.service.PassageService;
 import lombok.RequiredArgsConstructor;
@@ -35,5 +37,11 @@ public class PassageController {
         List<PassageTitleListDto> passages= passageService.getPaginatedPassagesByTitle(memCode, keyword, page, size);
         return ResponseEntity.ok(passages);
 
+    }
+
+    @PatchMapping("/favo")
+    public ResponseEntity<PassageFavoriteResponseDto> favoritePassage(@RequestBody PassageFavoriteRequestDto requestDto) {
+        PassageFavoriteResponseDto responseDto = passageService.favoritePassage(requestDto);
+        return ResponseEntity.ok(responseDto);
     }
 }

@@ -1,6 +1,8 @@
 package com.cj.genieq.passage.service;
 
 import com.cj.genieq.passage.dto.PassageContentDto;
+import com.cj.genieq.passage.dto.request.PassageFavoriteRequestDto;
+import com.cj.genieq.passage.dto.response.PassageFavoriteResponseDto;
 import com.cj.genieq.passage.dto.response.PassageTitleListDto;
 import com.cj.genieq.passage.entity.PassageEntity;
 import com.cj.genieq.passage.repository.PassageRepository;
@@ -86,5 +88,21 @@ public class PassageServiceImpl implements PassageService {
                         .favorite(passage.getIsFavorite())
                         .build())
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public PassageFavoriteResponseDto favoritePassage(PassageFavoriteRequestDto requestDto){
+        PassageEntity passage = passageRepository.findById(requestDto.getPasCode())
+                .orElseThrow(() -> new IllegalArgumentException("지문이 존재하지 않습니다."));
+
+        //상태
+        passage.setIsFavorite(passage.getIsFavorite() == 1 ? 0 : 1); //현재 값이 1이면 0(즐겨찾기 해제) / 0이면 1(즐겨찾기 추가)
+        passageRepository.save(passage);
+
+        return  PassageFavoriteResponseDto.builder()
+                .pasCode(passage.getPasCode())
+                .isFavorite(passage.getIsFavorite())
+                .build();
     }
 }
