@@ -15,4 +15,5 @@ public interface PassageService {
     PassageFavoriteResponseDto favoritePassage(PassageFavoriteRequestDto requestDto);
     PassageSelectResponseDto updatePassage(PassageUpdateRequestDto passageDto);
     List<PassagePreviewListDto> getPreviewList(Long memCode);
+    PassageSelectResponseDto selectPassage(Long pasCode);
 }

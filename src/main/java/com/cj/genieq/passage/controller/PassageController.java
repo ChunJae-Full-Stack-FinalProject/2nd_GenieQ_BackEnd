@@ -81,6 +81,30 @@ public class PassageController {
         }
     }
 
+    // 지문 개별 조회
+    @GetMapping("/select/{pasCode}")
+    public ResponseEntity<?> selectPassage(@PathVariable Long pasCode) {
+        try {
+            // PassageService에서 지문 정보를 조회
+            PassageSelectResponseDto passage = passageService.selectPassage(pasCode);
+
+            // 지문이 존재하지 않으면 예외 처리
+            if (passage == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("지문을 찾을 수 없습니다.");
+            }
+
+            return ResponseEntity.ok(passage);
+
+        } catch (EntityNotFoundException e) {
+            // 지문이 없을 경우 예외 처리
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("지문을 찾을 수 없습니다.");
+        } catch (Exception e) {
+            // 기타 예외 처리 (예기치 않은 오류)
+            e.printStackTrace();  // 로깅용
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다.");
+        }
+    }
+
 //    @GetMapping("/select/list")
 //    public ResponseEntity<?> getPaginatedPassages(
 //            @RequestParam("memCode") Long memCode,

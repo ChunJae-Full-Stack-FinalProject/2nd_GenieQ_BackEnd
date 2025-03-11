@@ -138,6 +138,25 @@ public class PassageServiceImpl implements PassageService {
 
         return previews;
     }
+    
+    // 지문 개별 조회
+    @Override
+    public PassageSelectResponseDto selectPassage(Long pasCode) {
+        PassageEntity passageEntity = passageRepository.findById(pasCode)
+                .orElseThrow(() -> new IllegalArgumentException("지문이 존재하지 않습니다."));
+
+        PassageSelectResponseDto passage = PassageSelectResponseDto.builder()
+                .pasCode(passageEntity.getPasCode())
+                .title(passageEntity.getTitle())
+                .type(passageEntity.getPasType())
+                .keyword(passageEntity.getKeyword())
+                .content(passageEntity.getContent())
+                .gist(passageEntity.getGist())
+                .build();
+
+        return passage;
+
+    }
 
     //    @Override
 //    @Transactional(readOnly = true)
