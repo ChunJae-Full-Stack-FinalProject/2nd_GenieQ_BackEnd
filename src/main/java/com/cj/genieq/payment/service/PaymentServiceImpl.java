@@ -2,6 +2,7 @@ package com.cj.genieq.payment.service;
 
 import com.cj.genieq.member.entity.MemberEntity;
 import com.cj.genieq.member.repository.MemberRepository;
+import com.cj.genieq.payment.dto.response.PaymentListResponseDto;
 import com.cj.genieq.payment.entity.PaymentEntity;
 import com.cj.genieq.payment.repository.PaymentRepository;
 import com.cj.genieq.ticket.entity.TicketEntity;
@@ -12,7 +13,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,5 +51,30 @@ public class PaymentServiceImpl implements PaymentService {
         } catch (Exception e) {
             throw new RuntimeException("결제 처리 중 오류가 발생했습니다: " + e.getMessage(), e);
         }
+    }
+
+    // 결제 전체 조회
+    @Override
+    public List<PaymentListResponseDto> getPaymentList(Long memCode, LocalDate startDate, LocalDate endDate, int page, int size) {
+        int startRow = page * size;
+        int endRow = startRow + size;
+
+        List<PaymentEntity> paymentEntities = paymentRepository.findByMemCodeAndDateRange(
+                memCode, startDate, endDate, startRow, endRow);
+
+        return paymentEntities.stream()
+                .map(payment -> {
+
+                    String payName = "지문/문항 생성 " + payment.getTicket().getTicNumber() + "회 이용권";
+                    String price = String.format("%,d 원", payment.getPrice());
+
+                    return PaymentListResponseDto.builder()
+                        .payCode(payment.getPayCode())
+                        .payName(payName) // 한글 값 반환
+                        .price(price)
+                        .date(payment.getDate().toLocalDate())
+                        .build();
+                })
+                .collect(Collectors.toList());
     }
 }
