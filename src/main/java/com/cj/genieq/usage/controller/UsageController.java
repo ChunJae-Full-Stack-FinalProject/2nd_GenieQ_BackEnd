@@ -41,10 +41,10 @@ public class UsageController {
     @PostMapping("/insert/each")
     public ResponseEntity<?> insertEach(){
         // 이용권 추가 시 사용
-        usageService.updateUsage(1L, 1, "이용권 차감");
+        //usageService.updateUsage(1L, 1, "이용권 추가");
 
         // 이용권 차감 시 사용
-        usageService.updateUsage(1L, -50, "지문 생성");
+        usageService.updateUsage(1L, -1, "지문 생성");
         return ResponseEntity.ok("차감 성공");
     }
 }

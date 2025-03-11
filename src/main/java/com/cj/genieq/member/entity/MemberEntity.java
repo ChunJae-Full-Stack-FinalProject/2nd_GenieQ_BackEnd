@@ -2,6 +2,7 @@ package com.cj.genieq.member.entity;
 
 
 import com.cj.genieq.passage.entity.PassageEntity;
+import com.cj.genieq.payment.entity.PaymentEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,4 +55,7 @@ public class MemberEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<PassageEntity> passages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<PaymentEntity> payments = new ArrayList<>();
 }
