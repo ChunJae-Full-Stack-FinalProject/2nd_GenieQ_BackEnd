@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController //컨트롤러에서 반환된 값이 JSON 형태로 응답됨
 @RequestMapping("/api")
 @RequiredArgsConstructor //자동 생성자 주입
@@ -45,8 +46,8 @@ public class MemberController {
 
     @PostMapping("/auth/select/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDto loinRequestDto, HttpSession session){
-        authService.login(loinRequestDto.getMemEmail(), loinRequestDto.getMemPassword(), session);
-        return ResponseEntity.ok().body("로그인 성공");
+        LoginMemberResponseDto loginuser = authService.login(loinRequestDto.getMemEmail(), loinRequestDto.getMemPassword(), session);
+        return ResponseEntity.ok().body(loginuser);
     }
 
     @PutMapping("/auth/remove/withdrawal")
@@ -55,24 +56,24 @@ public class MemberController {
         return ResponseEntity.ok("탈퇴완료");
     }
 
-    @PostMapping("/auth/select/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate(); // 세션 무효화
-        }
-
-        SecurityContextHolder.clearContext(); // Security 컨텍스트 삭제
-
-        // JSESSIONID 쿠키 삭제
-        Cookie cookie = new Cookie("JSESSIONID", null);
-        cookie.setMaxAge(0);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
-
-        return ResponseEntity.ok().body("로그아웃 성공");
-    }
+//    @PostMapping("/auth/select/logout")
+//    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+//        HttpSession session = request.getSession(false);
+//        if (session != null) {
+//            session.invalidate(); // 세션 무효화
+//        }
+//
+//        SecurityContextHolder.clearContext(); // Security 컨텍스트 삭제
+//
+//        // JSESSIONID 쿠키 삭제
+//        Cookie cookie = new Cookie("JSESSIONID", null);
+//        cookie.setMaxAge(0);
+//        cookie.setHttpOnly(true);
+//        cookie.setPath("/");
+//        response.addCookie(cookie);
+//
+//        return ResponseEntity.ok().body("로그아웃 성공");
+//    }
 
     // Info Controller
 

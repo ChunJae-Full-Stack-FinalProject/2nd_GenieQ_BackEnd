@@ -50,6 +50,7 @@ public class SecurityConfig {
                         .invalidateHttpSession(true) // 세션 무효화
                         .deleteCookies("JSESSIONID") // JSESSIONID 쿠키 삭제
                         .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setCharacterEncoding("UTF-8");
                             response.setStatus(HttpServletResponse.SC_OK);
                             response.getWriter().write("로그아웃 성공 및 쿠키 삭제 완료");
                         })
