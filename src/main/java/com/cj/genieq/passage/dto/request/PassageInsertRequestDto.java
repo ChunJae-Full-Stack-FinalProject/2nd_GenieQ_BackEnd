@@ -1,4 +1,4 @@
-package com.cj.genieq.passage.dto;
+package com.cj.genieq.passage.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,13 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @NoArgsConstructor
-public class PassageContentDto {
-    private Long passCode;
+public class PassageInsertRequestDto {
     private String type;
     private String keyword;
     private String title;
     private String content;
     private String gist;
-
-    private Long memCode;
+    private Integer isGenerated;
 }

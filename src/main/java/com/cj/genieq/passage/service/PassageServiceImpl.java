@@ -1,14 +1,19 @@
 package com.cj.genieq.passage.service;
 
-import com.cj.genieq.passage.dto.PassageContentDto;
+import com.cj.genieq.member.entity.MemberEntity;
+import com.cj.genieq.member.repository.MemberRepository;
 import com.cj.genieq.passage.dto.request.PassageFavoriteRequestDto;
+import com.cj.genieq.passage.dto.request.PassageInsertRequestDto;
 import com.cj.genieq.passage.dto.response.PassageFavoriteResponseDto;
+import com.cj.genieq.passage.dto.response.PassageSelectResponseDto;
 import com.cj.genieq.passage.dto.response.PassageTitleListDto;
 import com.cj.genieq.passage.entity.PassageEntity;
 import com.cj.genieq.passage.repository.PassageRepository;
-import com.cj.genieq.subject.entity.SubjectEntity;
-import com.cj.genieq.subject.repository.SubjectRepository;
+import com.cj.genieq.usage.repository.UsageRepository;
+import com.cj.genieq.usage.service.UsageService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,76 +24,79 @@ import java.util.List;
 public class PassageServiceImpl implements PassageService {
 
     private final PassageRepository passageRepository;
-    private final SubjectRepository subjectRepository;
+    private final MemberRepository memberRepository;
+    private final UsageRepository usageRepository;
+    private final UsageService usageService;
 
     @Override
     @Transactional
-    public PassageContentDto savePassage(PassageContentDto passageDto) {
+    public PassageSelectResponseDto savePassage(Long memCode, PassageInsertRequestDto passageDto) {
         try {
-            // 주제 enum 타입 변환
-            SubjectEntity.SubjectType subjectType = SubjectEntity.SubjectType.valueOf(passageDto.getType());
-
-            // 주제 존재 확인 후 없으면 새로 생성
-            SubjectEntity subject = subjectRepository
-                    .findBySubTypeAndSubKeyword(subjectType, passageDto.getKeyword())
-                    .orElseGet(() -> {
-                        SubjectEntity newSubject = SubjectEntity.builder()
-                                .subType(subjectType)
-                                .subKeyword(passageDto.getKeyword())
-                                .build();
-                        return subjectRepository.save(newSubject);
-                    });
+            // 회원 조회
+            MemberEntity member = memberRepository.findById(memCode)
+                    .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+            
+             // 제목 중복 처리
+            String title = generateTitle(passageDto.getTitle());
 
             // Passage 엔티티 생성 및 저장
             PassageEntity passage = PassageEntity.builder()
-                    .title(passageDto.getTitle())
+                    .pasType(passageDto.getType())
+                    .keyword(passageDto.getKeyword())
+                    .title(title)
                     .content(passageDto.getContent())
                     .gist(passageDto.getGist())
-                    .isFavorite(0) // 기본값 설정
-                    .subject(subject)
-                    .memCode(passageDto.getMemCode())
+                    .isGenerated(passageDto.getIsGenerated())
+                    .member(member)
                     .build();
 
             PassageEntity savedPassage = passageRepository.save(passage);
 
-            // 저장 성공 시 PassageEntity → PassageRequestDto로 변환
-            return PassageContentDto.builder()
-                    .passCode(savedPassage.getPasCode())
-                    .title(savedPassage.getTitle())
-                    .content(savedPassage.getContent())
-                    .gist(savedPassage.getGist())
-                    .type(savedPassage.getSubject().getSubType().name()) // Enum → String 변환
-                    .keyword(savedPassage.getSubject().getSubKeyword())
-                    .memCode(passageDto.getMemCode())
-                    .build();
+            usageService.updateUsage(memCode, -1, "지문 생성");
 
+            PassageSelectResponseDto selectedPassage =  PassageSelectResponseDto.builder()
+                        .pasCode(savedPassage.getPasCode())
+                        .title(savedPassage.getTitle())
+                        .type(savedPassage.getPasType())
+                        .keyword(savedPassage.getKeyword())
+                        .content(savedPassage.getContent())
+                        .gist(savedPassage.getGist())
+                        .build();
+
+            return selectedPassage;
+        } catch (EntityNotFoundException e) {
+            // 회원이 없으면 EntityNotFoundException 예외 처리
+            throw new EntityNotFoundException("지문 저장 실패: " + e.getMessage());
+        } catch (DataIntegrityViolationException e) {
+            // 데이터 무결성 오류 처리
+            throw new DataIntegrityViolationException("데이터 무결성 위반: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace(); // 예외 발생 시 출력
+            e.printStackTrace();  // 예외 로깅
             return null;
         }
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<PassageTitleListDto> getPaginatedPassagesByTitle(Long memCode, String title, int page, int size) {
-        String searchKeyword = "%" + title + "%";
-
-        int startRow = page * size;
-        int endRow = startRow + size;
-
-        List<PassageEntity> result = passageRepository
-                .findByMemCodeAndKeyword(memCode, searchKeyword, startRow, endRow);
-
-        return result.stream()
-                .map(passage -> PassageTitleListDto.builder()
-                        .passageCode(passage.getPasCode())
-                        .passageTitle(passage.getTitle())
-                        .subjectKeyword(passage.getSubject().getSubKeyword())
-                        .date(passage.getDate())
-                        .favorite(passage.getIsFavorite())
-                        .build())
-                .toList();
-    }
+//    @Override
+//    @Transactional(readOnly = true)
+//    public List<PassageTitleListDto> getPaginatedPassagesByTitle(Long memCode, String title, int page, int size) {
+//        String searchKeyword = "%" + title + "%";
+//
+//        int startRow = page * size;
+//        int endRow = startRow + size;
+//
+//        List<PassageEntity> result = passageRepository
+//                .findByMemCodeAndKeyword(memCode, searchKeyword, startRow, endRow);
+//
+//        return result.stream()
+//                .map(passage -> PassageTitleListDto.builder()
+//                        .passageCode(passage.getPasCode())
+//                        .passageTitle(passage.getTitle())
+//                        .subjectKeyword(passage.getSubject().getSubKeyword())
+//                        .date(passage.getDate())
+//                        .favorite(passage.getIsFavorite())
+//                        .build())
+//                .toList();
+//    }
 
     @Override
     @Transactional
@@ -105,4 +113,21 @@ public class PassageServiceImpl implements PassageService {
                 .isFavorite(passage.getIsFavorite())
                 .build();
     }
+    
+    // 제목 중복 처리 메소드
+    private String generateTitle(String title){
+        // 제목 중복 처리
+        String originalTitle = title;
+        int counter = 1;
+
+        // 제목 중복 체크
+        while (passageRepository.existsByTitle(title)) {
+            // 제목이 이미 존재하면 (1), (2), (3)... 형식으로 수정
+            title = originalTitle + "(" + counter + ")";
+            counter++;
+        }
+
+        return title;
+    }
+
 }

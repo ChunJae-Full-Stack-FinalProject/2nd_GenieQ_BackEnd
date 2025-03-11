@@ -27,4 +27,8 @@ public interface PassageRepository extends JpaRepository<PassageEntity,Long> {
             @Param("keyword") String keyword,
             @Param("startRow") int startRow,
             @Param("endRow") int endRow);
+
+    // 제목이 중복되는지 확인
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN TRUE ELSE FALSE END FROM PassageEntity p WHERE p.title = :title")
+    boolean existsByTitle(@Param("title") String title);
 }
