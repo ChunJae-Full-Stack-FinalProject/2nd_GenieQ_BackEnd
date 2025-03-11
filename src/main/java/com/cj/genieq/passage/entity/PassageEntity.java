@@ -1,6 +1,7 @@
 package com.cj.genieq.passage.entity;
 
 import com.cj.genieq.member.entity.MemberEntity;
+import com.cj.genieq.question.entity.QuestionEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +10,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @Data
@@ -56,4 +59,9 @@ public class PassageEntity {
     @ManyToOne
     @JoinColumn(name = "MEM_CODE")
     private MemberEntity member;
+
+    //onetomany는 부모 엔티티에서 자식 엔티티 관리
+    //1:N 관계
+    @OneToMany(mappedBy = "passage", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<QuestionEntity> questions = new ArrayList<>();
 }

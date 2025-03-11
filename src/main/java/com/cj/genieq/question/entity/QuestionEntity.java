@@ -23,6 +23,7 @@ public class QuestionEntity {
     @Column(name = "QUE_ANSWER")
     private String queAnswer;
 
+    @ManyToOne
     private Long pasCode;
 
 }
