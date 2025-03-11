@@ -7,6 +7,7 @@ import com.cj.genieq.passage.dto.request.PassageInsertRequestDto;
 import com.cj.genieq.passage.dto.request.PassageUpdateRequestDto;
 import com.cj.genieq.passage.dto.request.PassageWithQuestionsRequestDto;
 import com.cj.genieq.passage.dto.response.PassageFavoriteResponseDto;
+import com.cj.genieq.passage.dto.response.PassagePreviewListDto;
 import com.cj.genieq.passage.dto.response.PassageSelectResponseDto;
 import com.cj.genieq.passage.dto.response.PassageTitleListDto;
 import com.cj.genieq.passage.dto.response.PassageWithQuestionsResponseDto;
@@ -23,9 +24,11 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +38,7 @@ public class PassageServiceImpl implements PassageService {
     private final MemberRepository memberRepository;
     private final UsageService usageService;
 
+    // 지문 저장
     @Override
     @Transactional
     public PassageSelectResponseDto savePassage(Long memCode, PassageInsertRequestDto passageDto) {
@@ -84,6 +88,7 @@ public class PassageServiceImpl implements PassageService {
         }
     }
 
+    // 지문 수정
     @Override
     @Transactional
     public PassageSelectResponseDto updatePassage(PassageUpdateRequestDto passageDto) {
@@ -113,6 +118,52 @@ public class PassageServiceImpl implements PassageService {
                 .build();
 
         return selectedPassage;
+    }
+
+    // 지문 미리보기 리스트
+    @Override
+    public List<PassagePreviewListDto> getPreviewList(Long memCode) {
+        List<PassageEntity> passages = passageRepository.findGeneratedPassagesByMember(memCode);
+
+        if (passages.isEmpty()) {
+            throw new EntityNotFoundException("지문이 존재하지 않습니다.");
+        }
+
+        List<PassagePreviewListDto> previews = passages.stream()
+                .map(passage -> {
+                    // date가 null인 경우 기본값 처리 (예시로 현재 날짜)
+                    LocalDate date = passage.getDate() != null ? passage.getDate().toLocalDate() : LocalDate.now();
+
+                    return PassagePreviewListDto.builder()
+                            .passageCode(passage.getPasCode())  // 지문 코드
+                            .passageTitle(passage.getTitle())   // 지문 제목
+                            .subjectKeyword(passage.getKeyword()) // 지문 키워드
+                            .date(date) // 날짜 처리
+                            .favorite(passage.getIsFavorite()) // 즐겨찾기 상태
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return previews;
+    }
+
+    // 지문 개별 조회
+    @Override
+    public PassageSelectResponseDto selectPassage(Long pasCode) {
+        PassageEntity passageEntity = passageRepository.findById(pasCode)
+                .orElseThrow(() -> new IllegalArgumentException("지문이 존재하지 않습니다."));
+
+        PassageSelectResponseDto passage = PassageSelectResponseDto.builder()
+                .pasCode(passageEntity.getPasCode())
+                .title(passageEntity.getTitle())
+                .type(passageEntity.getPasType())
+                .keyword(passageEntity.getKeyword())
+                .content(passageEntity.getContent())
+                .gist(passageEntity.getGist())
+                .build();
+
+        return passage;
+
     }
 
 //    @Override

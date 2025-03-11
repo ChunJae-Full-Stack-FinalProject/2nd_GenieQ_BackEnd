@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Builder
 @Data
 @NoArgsConstructor
-public class PassageTitleListDto {
+public class PassagePreviewListDto {
     private Long passageCode;
     private String passageTitle;
     private String subjectKeyword;

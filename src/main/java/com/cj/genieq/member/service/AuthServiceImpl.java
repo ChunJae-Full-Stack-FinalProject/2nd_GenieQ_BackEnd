@@ -4,6 +4,7 @@ import com.cj.genieq.member.dto.request.SignUpRequestDto;
 import com.cj.genieq.member.dto.response.LoginMemberResponseDto;
 import com.cj.genieq.member.entity.MemberEntity;
 import com.cj.genieq.member.repository.MemberRepository;
+import com.cj.genieq.usage.service.UsageService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UsageService usageService;
 
     // 이메일 중복 검사 서비스
     // 이메일 하나만을 전달받아 중복 체크를 수행
@@ -26,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
 
     //  회원가입 처리
     @Override
+    @Transactional
     // signUp(SignUpRequestDto signUpRequestDto)는 회원가입에 필요한 데이터를 매개변수로 받음
     public void signUp(SignUpRequestDto signUpRequestDto) {
         if (checkEmailDuplicate(signUpRequestDto.getMemEmail())) {
@@ -45,7 +48,10 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         // db에 저장 처리
-        memberRepository.save(member);
+        MemberEntity savedMember = memberRepository.save(member);
+
+        // 이용권 추가
+        usageService.updateUsage(savedMember.getMemCode(), 5, "회원 가입");
     }
 
     @Override
