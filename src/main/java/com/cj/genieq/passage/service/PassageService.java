@@ -6,7 +6,6 @@ import com.cj.genieq.passage.dto.request.PassageUpdateRequestDto;
 import com.cj.genieq.passage.dto.request.PassageWithQuestionsRequestDto;
 import com.cj.genieq.passage.dto.response.PassageFavoriteResponseDto;
 import com.cj.genieq.passage.dto.response.PassageSelectResponseDto;
-import com.cj.genieq.passage.dto.response.PassageTitleListDto;
 import com.cj.genieq.passage.dto.response.PassageWithQuestionsResponseDto;
 import com.cj.genieq.passage.dto.response.PassagePreviewListDto;
 
