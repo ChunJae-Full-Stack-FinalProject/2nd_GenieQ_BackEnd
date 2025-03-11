@@ -64,4 +64,10 @@ public class PassageEntity {
     //1:N 관계
     @OneToMany(mappedBy = "passage", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuestionEntity> questions = new ArrayList<>();
+
+    //문항 추가 메소드 추가
+    public void addQuestion(QuestionEntity questionEntity) {
+        questions.add(questionEntity);
+        questionEntity.setPassage(this);
+    }
 }

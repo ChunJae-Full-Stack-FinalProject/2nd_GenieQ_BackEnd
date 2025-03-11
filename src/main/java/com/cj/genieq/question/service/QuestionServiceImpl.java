@@ -9,11 +9,4 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class QuestionServiceImpl implements QuestionService {
 
-    //passage dto 가져와서 나머지 question 다 하기
-
-
-    @Override
-    public QuestionDto saveQuestion(QuestionDto question) {
-        return null;
-    }
 }

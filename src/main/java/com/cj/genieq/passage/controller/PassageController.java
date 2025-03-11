@@ -4,9 +4,11 @@ import com.cj.genieq.member.dto.response.LoginMemberResponseDto;
 import com.cj.genieq.passage.dto.request.PassageFavoriteRequestDto;
 import com.cj.genieq.passage.dto.request.PassageInsertRequestDto;
 import com.cj.genieq.passage.dto.request.PassageUpdateRequestDto;
+import com.cj.genieq.passage.dto.request.PassageWithQuestionsRequestDto;
 import com.cj.genieq.passage.dto.response.PassageFavoriteResponseDto;
 import com.cj.genieq.passage.dto.response.PassageSelectResponseDto;
 import com.cj.genieq.passage.dto.response.PassageTitleListDto;
+import com.cj.genieq.passage.dto.response.PassageWithQuestionsResponseDto;
 import com.cj.genieq.passage.service.PassageService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -69,4 +71,26 @@ public class PassageController {
         PassageFavoriteResponseDto responseDto = passageService.favoritePassage(requestDto);
         return ResponseEntity.ok(responseDto);
     }
+
+    @PostMapping("/ques/insert/each")
+    public ResponseEntity<?> insertEach(HttpSession session, @RequestBody PassageWithQuestionsRequestDto passageWithQuestionDto) {
+        // 세션에서 로그인 사용자 정보를 가져옴
+        LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
+
+        // 로그인 상태 확인
+        if (loginMember == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        // 지문과 문항 생성 및 저장
+        PassageWithQuestionsResponseDto savedPassageWithQuestions = passageService.savePassageWithQuestions(loginMember.getMemberCode(), passageWithQuestionDto);
+
+        // 저장된 지문과 문항 반환
+        if (savedPassageWithQuestions != null) {
+            return ResponseEntity.ok(savedPassageWithQuestions);
+        } else {
+            return ResponseEntity.badRequest().body("저장 실패");
+        }
+    }
+
 }

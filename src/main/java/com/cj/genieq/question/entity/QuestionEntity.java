@@ -1,6 +1,18 @@
 package com.cj.genieq.question.entity;
 
+import com.cj.genieq.passage.entity.PassageEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@AllArgsConstructor
+@Data
+@NoArgsConstructor
+@Builder
 
 @Entity
 @Table(name = "QUESTION")
@@ -17,13 +29,19 @@ public class QuestionEntity {
 
     @Lob
     @Column(name = "QUE_OPTION")
-    private String queOption;
+    private List<String> queOption;
 
     @Lob
     @Column(name = "QUE_ANSWER")
     private String queAnswer;
 
+    //fk관계 매핑
     @ManyToOne
-    private Long pasCode;
+    @JoinColumn(name = "PAS_CODE")
+    private PassageEntity passage;
+
+    public void setPassage(PassageEntity passageEntity) {
+        this.passage = passageEntity;
+    }
 
 }
