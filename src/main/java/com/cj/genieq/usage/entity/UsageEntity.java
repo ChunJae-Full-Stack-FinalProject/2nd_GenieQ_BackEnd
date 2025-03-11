@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 
 @Entity
+@DynamicInsert
 @Table(name="USAGE")
 @SequenceGenerator(name = "seqUsaNo", sequenceName = "SEQ_USA_NO", allocationSize = 1)
 public class UsageEntity {
