@@ -4,6 +4,7 @@ import com.cj.genieq.member.entity.MemberEntity;
 import com.cj.genieq.member.repository.MemberRepository;
 import com.cj.genieq.passage.dto.request.PassageFavoriteRequestDto;
 import com.cj.genieq.passage.dto.request.PassageInsertRequestDto;
+import com.cj.genieq.passage.dto.request.PassageUpdateRequestDto;
 import com.cj.genieq.passage.dto.response.PassageFavoriteResponseDto;
 import com.cj.genieq.passage.dto.response.PassageSelectResponseDto;
 import com.cj.genieq.passage.dto.response.PassageTitleListDto;
@@ -26,7 +27,6 @@ public class PassageServiceImpl implements PassageService {
 
     private final PassageRepository passageRepository;
     private final MemberRepository memberRepository;
-    private final UsageRepository usageRepository;
     private final UsageService usageService;
 
     @Override
@@ -76,6 +76,37 @@ public class PassageServiceImpl implements PassageService {
             e.printStackTrace();  // 예외 로깅
             return null;
         }
+    }
+
+    @Override
+    @Transactional
+    public PassageSelectResponseDto updatePassage(PassageUpdateRequestDto passageDto) {
+        // 1. 기존 지문 조회
+        PassageEntity passage = passageRepository.findById(passageDto.getPasCode())
+                .orElseThrow(() -> new EntityNotFoundException("지문이 존재하지 않습니다."));
+
+        // 제목 중복 처리
+        String title = generateTitle(passageDto.getTitle());
+
+        // 2. 기존 지문 정보 수정
+        passage.setTitle(title);
+        passage.setContent(passageDto.getContent());
+        passage.setDate(LocalDateTime.now());
+
+        // 3. 지문 수정 후 저장
+        PassageEntity updatedPassage = passageRepository.save(passage);
+
+        // 4. 응답용 DTO 생성
+        PassageSelectResponseDto selectedPassage = PassageSelectResponseDto.builder()
+                .pasCode(updatedPassage.getPasCode())
+                .title(updatedPassage.getTitle())
+                .type(updatedPassage.getPasType())
+                .keyword(updatedPassage.getKeyword())
+                .content(updatedPassage.getContent())
+                .gist(updatedPassage.getGist())
+                .build();
+
+        return selectedPassage;
     }
 
 //    @Override
@@ -131,5 +162,4 @@ public class PassageServiceImpl implements PassageService {
 
         return title;
     }
-
 }
