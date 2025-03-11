@@ -44,7 +44,7 @@ public interface UsageRepository extends JpaRepository<UsageEntity, Long> {
         ) u
         WHERE ROWNUM = 1
     """, nativeQuery = true)
-        int findLatestBalanceByMemberCode(@Param("memCode") Long memCode);
+        Optional<Integer> findLatestBalanceByMemberCode(@Param("memCode") Long memCode);
 }
 
 

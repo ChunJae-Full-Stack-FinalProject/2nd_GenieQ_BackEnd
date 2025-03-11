@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class InfoServiceImpl implements InfoService {
@@ -39,9 +41,13 @@ public class InfoServiceImpl implements InfoService {
 
     @Override
     public int getUsageBalance(Long memCode) {
-        int usageBalance = usageRepository.findLatestBalanceByMemberCode(memCode);
+        Optional<Integer> latestBalanceOptional = usageRepository.findLatestBalanceByMemberCode(memCode);
 
-        return usageBalance;
+        if (latestBalanceOptional.isPresent()) {
+            return latestBalanceOptional.get();
+        } else{
+            throw new EntityNotFoundException("사용자 정보가 없습니다. memCode: " + memCode);
+        }
     }
 
     @Override
