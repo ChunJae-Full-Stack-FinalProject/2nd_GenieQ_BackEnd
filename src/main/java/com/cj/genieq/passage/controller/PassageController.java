@@ -3,6 +3,7 @@ package com.cj.genieq.passage.controller;
 import com.cj.genieq.member.dto.response.LoginMemberResponseDto;
 import com.cj.genieq.passage.dto.request.PassageFavoriteRequestDto;
 import com.cj.genieq.passage.dto.request.PassageInsertRequestDto;
+import com.cj.genieq.passage.dto.request.PassageUpdateRequestDto;
 import com.cj.genieq.passage.dto.response.PassageFavoriteResponseDto;
 import com.cj.genieq.passage.dto.response.PassageSelectResponseDto;
 import com.cj.genieq.passage.dto.response.PassageTitleListDto;
@@ -37,6 +38,18 @@ public class PassageController {
             return ResponseEntity.ok(savedPassage);
         } else {
             return ResponseEntity.badRequest().body("저장 실패");
+        }
+    }
+
+    @PatchMapping("/update/each")
+    public ResponseEntity<?> updatePassage(@RequestBody PassageUpdateRequestDto passageDto) {
+        try {
+            // 지문 수정 및 업데이트된 지문 정보 반환
+            PassageSelectResponseDto updatedPassage = passageService.updatePassage(passageDto);
+            return ResponseEntity.ok(updatedPassage);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("지문 수정 실패");
         }
     }
 
