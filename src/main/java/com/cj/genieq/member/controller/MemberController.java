@@ -45,8 +45,8 @@ public class MemberController {
 
     @PostMapping("/auth/select/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDto loinRequestDto, HttpSession session){
-        authService.login(loinRequestDto.getMemEmail(), loinRequestDto.getMemPassword(), session);
-        return ResponseEntity.ok().body("로그인 성공");
+        LoginMemberResponseDto loginuser = authService.login(loinRequestDto.getMemEmail(), loinRequestDto.getMemPassword(), session);
+        return ResponseEntity.ok().body(loginuser);
     }
 
     @PutMapping("/auth/remove/withdrawal")
