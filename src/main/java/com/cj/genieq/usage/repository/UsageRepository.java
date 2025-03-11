@@ -21,7 +21,7 @@ public interface UsageRepository extends JpaRepository<UsageEntity, Long> {
                 FROM USAGE u
                 WHERE u.mem_code = :memCode
                 AND TRUNC(u.usa_date) BETWEEN TRUNC(:startDate) AND TRUNC(:endDate)
-                ORDER BY u.usa_date DESC
+                ORDER BY u.usa_code DESC
             ) u
             WHERE ROWNUM <= :endRow
         )
