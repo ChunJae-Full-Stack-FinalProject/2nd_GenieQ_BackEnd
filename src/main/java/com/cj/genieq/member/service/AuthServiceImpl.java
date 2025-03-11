@@ -50,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     // HttpSession은 세션을 관리하기 위한 인터페이스. 사용자가 웹 서버에 접속할 때부터 연결이 종료될 때까지 유지되는 상태 정보를 저장하는데 사용
-    public void login(String memEmail, String memPassword, HttpSession session) {
+    public LoginMemberResponseDto login(String memEmail, String memPassword, HttpSession session) {
         //이메일로 사용자 조회
         MemberEntity member = memberRepository.findByMemEmail(memEmail)
                 .orElseThrow(()-> new IllegalArgumentException("이메일이 존재하지 않습니다."));
@@ -68,6 +68,7 @@ public class AuthServiceImpl implements AuthService {
 
         //세션에 사용자 정보 저장
         session.setAttribute("LOGIN_USER", loginMember);
+        return loginMember;
     }
 
     @Override
