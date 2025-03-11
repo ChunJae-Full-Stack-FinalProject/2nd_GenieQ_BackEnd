@@ -31,4 +31,8 @@ public interface PassageRepository extends JpaRepository<PassageEntity,Long> {
     // 제목이 중복되는지 확인
     @Query("SELECT CASE WHEN COUNT(p) > 0 THEN TRUE ELSE FALSE END FROM PassageEntity p WHERE p.title = :title")
     boolean existsByTitle(@Param("title") String title);
+    
+    // 지문 미리보기 리스트
+    @Query("SELECT p FROM PassageEntity p WHERE p.member.memCode = :memCode AND p.isGenerated = 1 ORDER BY p.date DESC")
+    List<PassageEntity> findGeneratedPassagesByMember(@Param("memCode") Long memCode);
 }
