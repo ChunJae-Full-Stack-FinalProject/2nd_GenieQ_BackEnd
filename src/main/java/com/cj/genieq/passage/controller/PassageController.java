@@ -6,8 +6,9 @@ import com.cj.genieq.passage.dto.request.PassageInsertRequestDto;
 import com.cj.genieq.passage.dto.request.PassageUpdateRequestDto;
 import com.cj.genieq.passage.dto.response.PassageFavoriteResponseDto;
 import com.cj.genieq.passage.dto.response.PassageSelectResponseDto;
-import com.cj.genieq.passage.dto.response.PassageTitleListDto;
+import com.cj.genieq.passage.dto.response.PassagePreviewListDto;
 import com.cj.genieq.passage.service.PassageService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -50,6 +51,33 @@ public class PassageController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("지문 수정 실패");
+        }
+    }
+
+    @GetMapping("/select/prevlist")
+    public ResponseEntity<?> selectPrevList(HttpSession session) {
+        try{
+            LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
+
+            if (loginMember == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+            }
+
+            List<PassagePreviewListDto> previews = passageService.getPreviewList(loginMember.getMemberCode());
+
+            // 지문 목록이 비어있는 경우 처리 (optional)
+            if (previews.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("지문 목록이 없습니다.");
+            }
+
+            return ResponseEntity.ok(previews);
+        } catch (EntityNotFoundException e) {
+            // 예를 들어, 서비스에서 데이터가 없을 경우의 예외 처리
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("지문 정보가 존재하지 않습니다.");
+        } catch (Exception e) {
+            // 예기치 못한 예외 처리
+            e.printStackTrace(); // 로그로 예외 출력
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다.");
         }
     }
 
