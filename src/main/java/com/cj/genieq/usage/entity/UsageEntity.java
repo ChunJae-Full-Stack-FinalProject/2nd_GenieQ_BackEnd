@@ -38,4 +38,16 @@ public class UsageEntity {
     @ManyToOne
     @JoinColumn(name = "MEM_CODE")
     private MemberEntity member;
+
+    @Override
+    public String toString() {
+        return "UsageEntity{" +
+                "usaCode=" + usaCode +
+                ", usaType='" + usaType + '\'' +
+                ", usaDate=" + usaDate +
+                ", usaCount=" + usaCount +
+                ", usaBalance=" + usaBalance +
+                '}';
+    }
+
 }

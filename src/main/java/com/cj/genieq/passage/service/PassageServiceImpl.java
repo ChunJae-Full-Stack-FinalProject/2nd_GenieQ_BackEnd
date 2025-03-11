@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -174,10 +175,12 @@ public class PassageServiceImpl implements PassageService {
     @Transactional
     public PassageWithQuestionsResponseDto savePassageWithQuestions(Long memCode, PassageWithQuestionsRequestDto passageWithQuestionDto){
         try{
+            System.out.println("자 출력해!2");
+            System.out.println("코드"+memCode);
             // 사용자 정보 확인
             MemberEntity member = memberRepository.findById(memCode)
                     .orElseThrow(() -> new EntityNotFoundException("Member not found"));
-
+            System.out.println("자 출력해!"+member);
             // 제목 중복 처리
             String title = generateTitle(passageWithQuestionDto.getTitle());
 
@@ -193,18 +196,31 @@ public class PassageServiceImpl implements PassageService {
                     .member(member)
                     .build();
 
-            // 문항 추가
-            if(passageWithQuestionDto.getQuestions() != null){
-                QuestionInsertRequestDto questionInsertRequestDto = passageWithQuestionDto.getQuestions();
-                QuestionEntity question = QuestionEntity.builder()
-                        .queQuery(questionInsertRequestDto.getQueQuery())
-                        .queOption(questionInsertRequestDto.getQueOption())
-                        .queAnswer(questionInsertRequestDto.getQueAnswer())
-                        .build();
+            QuestionInsertRequestDto questionDto = passageWithQuestionDto.getQuestions();
+            QuestionEntity question = QuestionEntity.builder()
+                    .queQuery(questionDto.getQueQuery())
+                    .queAnswer(questionDto.getQueAnswer())
+                    .passage(passage)
+                    .build();
+            question.setQueOption(questionDto.getQueOption());
 
-                //지문 엔티티에 추가
-                passage.addQuestion(question);
-            }
+            //편의상 역방향 참조도 설정 (없어도 DB에는 저장됨)
+            passage.setQuestions(question);
+//
+//            // 문항 추가
+//            if(passageWithQuestionDto.getQuestions() != null){
+//                QuestionInsertRequestDto questionInsertRequestDto = passageWithQuestionDto.getQuestions();
+//                QuestionEntity question = QuestionEntity.builder()
+//                        .queQuery(questionInsertRequestDto.getQueQuery())
+//                        .queAnswer(questionInsertRequestDto.getQueAnswer())
+//                        .passage(passage)
+//                        .build();
+//                // (수정) setter 메서드로 queOption 설정
+//                question.setQueOption(questionInsertRequestDto.getQueOption());
+//
+//                // 지문과 문항 추가
+//                passage.getQuestions().add(question);
+//            }
 
             // 지문과 문항 저장
             PassageEntity savedPassage = passageRepository.save(passage);
@@ -212,15 +228,21 @@ public class PassageServiceImpl implements PassageService {
             // 이용권 차감
             usageService.updateUsage(memCode, -1, "지문+문항 저장");
 
-            // 저장된 지문과 문항 반환
-            QuestionEntity savedQuestion = savedPassage.getQuestions().iterator().next();
-            // 문항 응답 DTO 생성
-            QuestionSelectResponseDto questionResponse = new QuestionSelectResponseDto(
-                    savedQuestion.getQueCode(),
-                    savedQuestion.getQueQuery(),
-                    savedQuestion.getQueOption(),
-                    savedQuestion.getQueAnswer()
-            );
+//            // 저장된 지문과 문항 반환
+//            QuestionEntity savedQuestion = savedPassage.getQuestions().iterator().next();
+//            // 문항 응답 DTO 생성
+//            QuestionSelectResponseDto questionResponse = new QuestionSelectResponseDto(
+//                    savedQuestion.getQueCode(),
+//                    savedQuestion.getQueQuery(),
+//                    savedQuestion.getQueOption(),
+//                    savedQuestion.getQueAnswer()
+//            );
+            QuestionSelectResponseDto questionResponse = QuestionSelectResponseDto.builder()
+                    .queCode(savedPassage.getQuestions().getQueCode())
+                    .queQuery(savedPassage.getQuestions().getQueQuery())
+                    .queAnswer(savedPassage.getQuestions().getQueAnswer())
+                    .queOption(savedPassage.getQuestions().getQueOption())
+                    .build();
 
             // PassageWithQuestionsResponseDto 생성
             PassageWithQuestionsResponseDto passageWithQuestionsResponseDto = PassageWithQuestionsResponseDto.builder()

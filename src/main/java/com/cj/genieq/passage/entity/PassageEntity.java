@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @AllArgsConstructor
 @Data
@@ -21,7 +19,7 @@ import java.util.List;
 @Entity
 @DynamicInsert
 @Table(name = "PASSAGE")
-@SequenceGenerator(name = "seqPasNo", sequenceName = "SEQ_PAS_NO", allocationSize = 1)
+@SequenceGenerator(name = "seqPasNo", sequenceName = "SEQ_PAS_NO", allocationSize = 1, initialValue = 100)
 public class PassageEntity {
     @Id
     @GeneratedValue(generator = "seqPasNo", strategy = GenerationType.SEQUENCE)
@@ -60,14 +58,24 @@ public class PassageEntity {
     @JoinColumn(name = "MEM_CODE")
     private MemberEntity member;
 
-    //onetomany는 부모 엔티티에서 자식 엔티티 관리
-    //1:N 관계
-    @OneToMany(mappedBy = "passage", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<QuestionEntity> questions = new ArrayList<>();
+    // 지문 하나에 문항 여러개
+    @OneToOne(mappedBy = "passage", cascade = CascadeType.ALL, orphanRemoval = true)
+    private QuestionEntity questions;
 
-    //문항 추가 메소드 추가
-    public void addQuestion(QuestionEntity questionEntity) {
-        questions.add(questionEntity);
-        questionEntity.setPassage(this);
+    // toString() 메소드 오버라이드
+    @Override
+    public String toString() {
+        return "PassageEntity{" +
+                "pasCode=" + pasCode +
+                ", pasType='" + pasType + '\'' +
+                ", keyword='" + keyword + '\'' +
+                ", title='" + title + '\'' +
+                ", content='" + (content != null ? content.substring(0, Math.min(content.length(), 30)) : "") + "..." + '\'' + // 내용 일부만 출력
+                ", gist='" + gist + '\'' +
+                ", date=" + date +
+                ", isFavorite=" + isFavorite +
+                ", isDeleted=" + isDeleted +
+                ", isGenerated=" + isGenerated +
+                '}';
     }
 }
