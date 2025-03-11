@@ -44,17 +44,22 @@ public class UsageServiceImpl implements UsageService{
     // 매개변수 : 회원코드, 이용권 수(추가 시 양수, 차감 시 음수), 내역 종류
     @Transactional
     public void updateUsage(Long memCode, int count, String type) {
-        // 회원 정보 조회
+        // 1. 회원 정보 조회
         MemberEntity member = memberRepository.findById(memCode)
                 .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
 
-        // 가장 최근 잔액을 가져옴
+        // 2. 가장 최근 잔액을 가져옴
         int lastBalance = usageRepository.findLatestBalanceByMemberCode(memCode);
 
-        // 새로운 잔액 계산
+        // 3. 새로운 잔액 계산
         int newBalance = lastBalance + count;
 
-        // 이용내역 저장
+        // 4. 새로운 잔액이 음수일 경우, 적절한 예외 처리
+        if (newBalance < 0) {
+            throw new IllegalArgumentException("잔액이 부족합니다.");
+        }
+
+        // 5. 이용 내역 저장
         UsageEntity usage = UsageEntity.builder()
                 .usaType(type)  // 이용권 추가 내역
                 .usaDate(LocalDateTime.now())
@@ -63,6 +68,6 @@ public class UsageServiceImpl implements UsageService{
                 .member(member)
                 .build();
 
-        usageRepository.save(usage);
+        usageRepository.save(usage);  // 이용 내역 저장
     }
 }
