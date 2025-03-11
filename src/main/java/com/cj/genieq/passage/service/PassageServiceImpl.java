@@ -17,6 +17,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -46,6 +47,7 @@ public class PassageServiceImpl implements PassageService {
                     .title(title)
                     .content(passageDto.getContent())
                     .gist(passageDto.getGist())
+                    .date(LocalDateTime.now())
                     .isGenerated(passageDto.getIsGenerated())
                     .member(member)
                     .build();
