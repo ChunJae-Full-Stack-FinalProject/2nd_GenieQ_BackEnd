@@ -5,11 +5,17 @@ import com.cj.genieq.member.repository.MemberRepository;
 import com.cj.genieq.passage.dto.request.PassageFavoriteRequestDto;
 import com.cj.genieq.passage.dto.request.PassageInsertRequestDto;
 import com.cj.genieq.passage.dto.request.PassageUpdateRequestDto;
+import com.cj.genieq.passage.dto.request.PassageWithQuestionsRequestDto;
 import com.cj.genieq.passage.dto.response.PassageFavoriteResponseDto;
 import com.cj.genieq.passage.dto.response.PassagePreviewListDto;
 import com.cj.genieq.passage.dto.response.PassageSelectResponseDto;
+import com.cj.genieq.passage.dto.response.PassageWithQuestionsResponseDto;
 import com.cj.genieq.passage.entity.PassageEntity;
 import com.cj.genieq.passage.repository.PassageRepository;
+import com.cj.genieq.question.dto.request.QuestionInsertRequestDto;
+import com.cj.genieq.question.dto.response.QuestionSelectResponseDto;
+import com.cj.genieq.question.entity.QuestionEntity;
+import com.cj.genieq.usage.repository.UsageRepository;
 import com.cj.genieq.usage.service.UsageService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +36,7 @@ public class PassageServiceImpl implements PassageService {
     private final PassageRepository passageRepository;
     private final MemberRepository memberRepository;
     private final UsageService usageService;
-    
+
     // 지문 저장
     @Override
     @Transactional
@@ -111,7 +118,7 @@ public class PassageServiceImpl implements PassageService {
 
         return selectedPassage;
     }
-    
+
     // 지문 미리보기 리스트
     @Override
     public List<PassagePreviewListDto> getPreviewList(Long memCode) {
@@ -138,7 +145,7 @@ public class PassageServiceImpl implements PassageService {
 
         return previews;
     }
-    
+
     // 지문 개별 조회
     @Override
     public PassageSelectResponseDto selectPassage(Long pasCode) {
@@ -158,7 +165,7 @@ public class PassageServiceImpl implements PassageService {
 
     }
 
-    //    @Override
+//    @Override
 //    @Transactional(readOnly = true)
 //    public List<PassageTitleListDto> getPaginatedPassagesByTitle(Long memCode, String title, int page, int size) {
 //        String searchKeyword = "%" + title + "%";
@@ -210,5 +217,106 @@ public class PassageServiceImpl implements PassageService {
         }
 
         return title;
+    }
+
+
+    //지문 + 문항 저장
+    @Override
+    @Transactional
+    public PassageWithQuestionsResponseDto savePassageWithQuestions(Long memCode, PassageWithQuestionsRequestDto passageWithQuestionDto){
+        try{
+            System.out.println("자 출력해!2");
+            System.out.println("코드"+memCode);
+            // 사용자 정보 확인
+            MemberEntity member = memberRepository.findById(memCode)
+                    .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+            System.out.println("자 출력해!"+member);
+            // 제목 중복 처리
+            String title = generateTitle(passageWithQuestionDto.getTitle());
+
+            // 지문 생성
+            PassageEntity passage = PassageEntity.builder()
+                    .pasType(passageWithQuestionDto.getType())
+                    .keyword(passageWithQuestionDto.getKeyword())
+                    .title(title)
+                    .content(passageWithQuestionDto.getContent())
+                    .gist(passageWithQuestionDto.getGist())
+                    .date(LocalDateTime.now())
+                    .isGenerated(passageWithQuestionDto.getIsGenerated())
+                    .member(member)
+                    .build();
+
+            QuestionInsertRequestDto questionDto = passageWithQuestionDto.getQuestions();
+            QuestionEntity question = QuestionEntity.builder()
+                    .queQuery(questionDto.getQueQuery())
+                    .queAnswer(questionDto.getQueAnswer())
+                    .passage(passage)
+                    .build();
+            question.setQueOption(questionDto.getQueOption());
+
+            //편의상 역방향 참조도 설정 (없어도 DB에는 저장됨)
+            passage.setQuestions(question);
+//
+//            // 문항 추가
+//            if(passageWithQuestionDto.getQuestions() != null){
+//                QuestionInsertRequestDto questionInsertRequestDto = passageWithQuestionDto.getQuestions();
+//                QuestionEntity question = QuestionEntity.builder()
+//                        .queQuery(questionInsertRequestDto.getQueQuery())
+//                        .queAnswer(questionInsertRequestDto.getQueAnswer())
+//                        .passage(passage)
+//                        .build();
+//                // (수정) setter 메서드로 queOption 설정
+//                question.setQueOption(questionInsertRequestDto.getQueOption());
+//
+//                // 지문과 문항 추가
+//                passage.getQuestions().add(question);
+//            }
+
+            // 지문과 문항 저장
+            PassageEntity savedPassage = passageRepository.save(passage);
+
+            // 이용권 차감
+            usageService.updateUsage(memCode, -1, "지문+문항 저장");
+
+//            // 저장된 지문과 문항 반환
+//            QuestionEntity savedQuestion = savedPassage.getQuestions().iterator().next();
+//            // 문항 응답 DTO 생성
+//            QuestionSelectResponseDto questionResponse = new QuestionSelectResponseDto(
+//                    savedQuestion.getQueCode(),
+//                    savedQuestion.getQueQuery(),
+//                    savedQuestion.getQueOption(),
+//                    savedQuestion.getQueAnswer()
+//            );
+            QuestionSelectResponseDto questionResponse = QuestionSelectResponseDto.builder()
+                    .queCode(savedPassage.getQuestions().getQueCode())
+                    .queQuery(savedPassage.getQuestions().getQueQuery())
+                    .queAnswer(savedPassage.getQuestions().getQueAnswer())
+                    .queOption(savedPassage.getQuestions().getQueOption())
+                    .build();
+
+            // PassageWithQuestionsResponseDto 생성
+            PassageWithQuestionsResponseDto passageWithQuestionsResponseDto = PassageWithQuestionsResponseDto.builder()
+                    .pasCode(savedPassage.getPasCode())
+                    .title(savedPassage.getTitle())
+                    .type(savedPassage.getPasType())
+                    .keyword(savedPassage.getKeyword())
+                    .content(savedPassage.getContent())
+                    .gist(savedPassage.getGist())
+                    .questions(questionResponse)  // 문항 응답 추가
+                    .build();
+
+            return passageWithQuestionsResponseDto;
+        }catch (EntityNotFoundException e) {
+            // 회원이 없으면 EntityNotFoundException 예외 처리
+            throw new EntityNotFoundException("지문 저장 실패: " + e.getMessage());
+        } catch (DataIntegrityViolationException e) {
+            // 데이터 무결성 오류 처리
+            throw new DataIntegrityViolationException("데이터 무결성 위반: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();  // 예외 로깅
+            return null;
+        }
+
+
     }
 }

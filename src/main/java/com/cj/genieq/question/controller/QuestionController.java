@@ -14,16 +14,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class QuestionController {
 
-    private final QuestionService questionService;
-
-    @PostMapping("/insert/each")
-    public ResponseEntity<?> insertQuestion(@RequestBody QuestionDto questionDto) {
-        QuestionDto savedQuestion = questionService.saveQuestion(questionDto);
-        if(savedQuestion != null) {
-            return ResponseEntity.ok().body(savedQuestion);
-        }
-        else {
-            return ResponseEntity.badRequest().body("저장 실패");
-        }
-    }
 }
