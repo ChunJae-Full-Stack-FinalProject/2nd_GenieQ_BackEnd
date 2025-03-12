@@ -1,6 +1,7 @@
 package com.cj.genieq.passage.entity;
 
 import com.cj.genieq.member.entity.MemberEntity;
+import com.cj.genieq.question.dto.Question;
 import com.cj.genieq.question.entity.QuestionEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @Data
@@ -58,24 +60,8 @@ public class PassageEntity {
     @JoinColumn(name = "MEM_CODE")
     private MemberEntity member;
 
-    // 지문 하나에 문항 여러개
-    @OneToOne(mappedBy = "passage", cascade = CascadeType.ALL, orphanRemoval = true)
-    private QuestionEntity questions;
+    @OneToMany(mappedBy = "passage", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<QuestionEntity> questions; //문항리스트
 
-    // toString() 메소드 오버라이드
-    @Override
-    public String toString() {
-        return "PassageEntity{" +
-                "pasCode=" + pasCode +
-                ", pasType='" + pasType + '\'' +
-                ", keyword='" + keyword + '\'' +
-                ", title='" + title + '\'' +
-                ", content='" + (content != null ? content.substring(0, Math.min(content.length(), 30)) : "") + "..." + '\'' + // 내용 일부만 출력
-                ", gist='" + gist + '\'' +
-                ", date=" + date +
-                ", isFavorite=" + isFavorite +
-                ", isDeleted=" + isDeleted +
-                ", isGenerated=" + isGenerated +
-                '}';
-    }
+
 }

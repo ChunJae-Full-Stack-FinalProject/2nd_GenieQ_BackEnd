@@ -22,6 +22,6 @@ public class PassageWithQuestionsRequestDto {
     private String content;
     private String gist;
     private Integer isGenerated;
-    private QuestionInsertRequestDto questions;
+    private List<QuestionInsertRequestDto> questions;
 
 }
