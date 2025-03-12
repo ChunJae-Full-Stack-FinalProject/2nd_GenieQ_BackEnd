@@ -5,6 +5,7 @@ import com.cj.genieq.passage.dto.request.*;
 import com.cj.genieq.passage.dto.response.*;
 import com.cj.genieq.passage.service.PassageService;
 import com.cj.genieq.passage.service.PdfService;
+import com.cj.genieq.passage.service.TxtService;
 import com.cj.genieq.passage.service.WordService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
@@ -25,6 +26,7 @@ public class PassageController {
     private final PassageService passageService;
     private final PdfService pdfService;
     private final WordService wordService;
+    private final TxtService txtService;
 
     @PostMapping("/insert/each")
     public ResponseEntity<?> insertEach(HttpSession session, @RequestBody PassageInsertRequestDto passageDto) {
@@ -263,4 +265,19 @@ public class PassageController {
 
         return new ResponseEntity<>(wordData, headers, HttpStatus.OK);
     }
+
+    @GetMapping("/generatetxt/{pasCode}")
+    public ResponseEntity<byte[]> generateTxt(@PathVariable("pasCode") Long pasCode) {
+        PassageWithQuestionsRequestDto responseDto = passageService.getPassageWithQuestions(pasCode);
+        byte[] txtData = txtService.createTxtFromDto(responseDto);
+
+        HttpHeaders headers = new HttpHeaders();
+        // ✅ 파일 이름 설정
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"document.txt\"");
+        // ✅ 응답 타입 설정
+        headers.add(HttpHeaders.CONTENT_TYPE, "text/plain; charset=UTF-8");
+
+        return new ResponseEntity<>(txtData, headers, HttpStatus.OK);
+    }
+
 }
