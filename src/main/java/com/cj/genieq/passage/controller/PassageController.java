@@ -125,7 +125,7 @@ public class PassageController {
     }
 
     @PostMapping("/ques/insert/each")
-    public ResponseEntity<?> insertEach(HttpSession session, @RequestBody PassageWithQuestionsRequestDto passageWithQuestionDto) {
+    public ResponseEntity<?> savePassage(HttpSession session, @RequestBody PassageWithQuestionsRequestDto requestDto) {
         // 세션에서 로그인 사용자 정보를 가져옴
         LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
 
@@ -134,15 +134,18 @@ public class PassageController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
 
-        // 지문과 문항 생성 및 저장
-        PassageWithQuestionsResponseDto savedPassageWithQuestions = passageService.savePassageWithQuestions(loginMember.getMemberCode(), passageWithQuestionDto);
 
-        // 저장된 지문과 문항 반환
-        if (savedPassageWithQuestions != null) {
-            return ResponseEntity.ok(savedPassageWithQuestions);
-        } else {
-            return ResponseEntity.badRequest().body("저장 실패");
-        }
+        Long pasCode = passageService.savePassageWithQuestions(loginMember.getMemberCode(), requestDto);
+        return ResponseEntity.ok(pasCode);
     }
+
+//    // ✅ 지문 + 문항 조회
+//    @GetMapping("/{pasCode}")
+//    public ResponseEntity<PassageWithQuestionsRequestDto> getPassage(@PathVariable Long pasCode) {
+//        PassageWithQuestionsRequestDto responseDto = passageService.getPassageWithQuestions(pasCode);
+//        return ResponseEntity.ok(responseDto);
+//    }
+
+
 
 }

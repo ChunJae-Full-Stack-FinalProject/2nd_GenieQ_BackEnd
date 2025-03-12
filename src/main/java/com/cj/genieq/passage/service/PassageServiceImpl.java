@@ -15,6 +15,7 @@ import com.cj.genieq.passage.repository.PassageRepository;
 import com.cj.genieq.question.dto.request.QuestionInsertRequestDto;
 import com.cj.genieq.question.dto.response.QuestionSelectResponseDto;
 import com.cj.genieq.question.entity.QuestionEntity;
+import com.cj.genieq.question.service.QuestionService;
 import com.cj.genieq.usage.repository.UsageRepository;
 import com.cj.genieq.usage.service.UsageService;
 import jakarta.persistence.EntityNotFoundException;
@@ -36,6 +37,7 @@ public class PassageServiceImpl implements PassageService {
     private final PassageRepository passageRepository;
     private final MemberRepository memberRepository;
     private final UsageService usageService;
+    private final QuestionService questionService;
 
     // 지문 저장
     @Override
@@ -219,104 +221,56 @@ public class PassageServiceImpl implements PassageService {
         return title;
     }
 
-
-    //지문 + 문항 저장
-    @Override
+    // ✅ 지문 + 문항 저장 (트랜잭션 적용)
     @Transactional
-    public PassageWithQuestionsResponseDto savePassageWithQuestions(Long memCode, PassageWithQuestionsRequestDto passageWithQuestionDto){
-        try{
-            System.out.println("자 출력해!2");
-            System.out.println("코드"+memCode);
-            // 사용자 정보 확인
-            MemberEntity member = memberRepository.findById(memCode)
-                    .orElseThrow(() -> new EntityNotFoundException("Member not found"));
-            System.out.println("자 출력해!"+member);
-            // 제목 중복 처리
-            String title = generateTitle(passageWithQuestionDto.getTitle());
+    public Long savePassageWithQuestions(Long memCode, PassageWithQuestionsRequestDto requestDto) {
+        // 1. 지문 엔티티 생성
+        PassageEntity passage = PassageEntity.builder()
+                .pasType(requestDto.getType())
+                .keyword(requestDto.getKeyword())
+                .title(requestDto.getTitle())
+                .content(requestDto.getContent())
+                .gist(requestDto.getGist())
+                .date(LocalDateTime.now())
+                .isGenerated(requestDto.getIsGenerated())
+                .build();
 
-            // 지문 생성
-            PassageEntity passage = PassageEntity.builder()
-                    .pasType(passageWithQuestionDto.getType())
-                    .keyword(passageWithQuestionDto.getKeyword())
-                    .title(title)
-                    .content(passageWithQuestionDto.getContent())
-                    .gist(passageWithQuestionDto.getGist())
-                    .date(LocalDateTime.now())
-                    .isGenerated(passageWithQuestionDto.getIsGenerated())
-                    .member(member)
-                    .build();
+        // 2. 지문 저장
+        PassageEntity savedPassage = passageRepository.save(passage);
 
-            QuestionInsertRequestDto questionDto = passageWithQuestionDto.getQuestions();
-            QuestionEntity question = QuestionEntity.builder()
-                    .queQuery(questionDto.getQueQuery())
-                    .queAnswer(questionDto.getQueAnswer())
-                    .passage(passage)
-                    .build();
-            question.setQueOption(questionDto.getQueOption());
+        // ✅ 3. 문항 저장은 QuestionService에서 처리
+        questionService.saveQuestions(savedPassage, requestDto.getQuestions());
+        usageService.updateUsage(memCode, -1, "문항 생성");
 
-            //편의상 역방향 참조도 설정 (없어도 DB에는 저장됨)
-            passage.setQuestions(question);
-//
-//            // 문항 추가
-//            if(passageWithQuestionDto.getQuestions() != null){
-//                QuestionInsertRequestDto questionInsertRequestDto = passageWithQuestionDto.getQuestions();
-//                QuestionEntity question = QuestionEntity.builder()
-//                        .queQuery(questionInsertRequestDto.getQueQuery())
-//                        .queAnswer(questionInsertRequestDto.getQueAnswer())
-//                        .passage(passage)
-//                        .build();
-//                // (수정) setter 메서드로 queOption 설정
-//                question.setQueOption(questionInsertRequestDto.getQueOption());
-//
-//                // 지문과 문항 추가
-//                passage.getQuestions().add(question);
-//            }
-
-            // 지문과 문항 저장
-            PassageEntity savedPassage = passageRepository.save(passage);
-
-            // 이용권 차감
-            usageService.updateUsage(memCode, -1, "지문+문항 저장");
-
-//            // 저장된 지문과 문항 반환
-//            QuestionEntity savedQuestion = savedPassage.getQuestions().iterator().next();
-//            // 문항 응답 DTO 생성
-//            QuestionSelectResponseDto questionResponse = new QuestionSelectResponseDto(
-//                    savedQuestion.getQueCode(),
-//                    savedQuestion.getQueQuery(),
-//                    savedQuestion.getQueOption(),
-//                    savedQuestion.getQueAnswer()
-//            );
-            QuestionSelectResponseDto questionResponse = QuestionSelectResponseDto.builder()
-                    .queCode(savedPassage.getQuestions().getQueCode())
-                    .queQuery(savedPassage.getQuestions().getQueQuery())
-                    .queAnswer(savedPassage.getQuestions().getQueAnswer())
-                    .queOption(savedPassage.getQuestions().getQueOption())
-                    .build();
-
-            // PassageWithQuestionsResponseDto 생성
-            PassageWithQuestionsResponseDto passageWithQuestionsResponseDto = PassageWithQuestionsResponseDto.builder()
-                    .pasCode(savedPassage.getPasCode())
-                    .title(savedPassage.getTitle())
-                    .type(savedPassage.getPasType())
-                    .keyword(savedPassage.getKeyword())
-                    .content(savedPassage.getContent())
-                    .gist(savedPassage.getGist())
-                    .questions(questionResponse)  // 문항 응답 추가
-                    .build();
-
-            return passageWithQuestionsResponseDto;
-        }catch (EntityNotFoundException e) {
-            // 회원이 없으면 EntityNotFoundException 예외 처리
-            throw new EntityNotFoundException("지문 저장 실패: " + e.getMessage());
-        } catch (DataIntegrityViolationException e) {
-            // 데이터 무결성 오류 처리
-            throw new DataIntegrityViolationException("데이터 무결성 위반: " + e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();  // 예외 로깅
-            return null;
-        }
-
-
+        // 저장된 지문 코드 반환
+        return savedPassage.getPasCode();
     }
+
+//    // ✅ 지문 + 문항 조회
+//    @Transactional(readOnly = true)
+//    public PassageWithQuestionsRequestDto getPassageWithQuestions(Long pasCode) {
+//        // 1. 지문 + 문항 조회 (JOIN 처리)
+//        PassageEntity passage = passageRepository.findById(pasCode)
+//                .orElseThrow(() -> new IllegalArgumentException("지문이 존재하지 않습니다."));
+//
+//        // 2. 엔티티 → DTO 변환
+//        List<QuestionInsertRequestDto> questions = passage.getQuestions().stream()
+//                .map(q -> QuestionInsertRequestDto.builder()
+//                        .queQuery(q.getQueQuery())
+//                        .queOption(List.of(q.getQueOption().split(","))) // String → JSON 변환
+//                        .queAnswer(q.getQueAnswer())
+//                        .build())
+//                .collect(Collectors.toList());
+//
+//        return PassageWithQuestionsRequestDto.builder()
+//                .type(passage.getPasType())
+//                .keyword(passage.getKeyword())
+//                .title(passage.getTitle())
+//                .content(passage.getContent())
+//                .gist(passage.getGist())
+//                .isGenerated(passage.getIsGenerated())
+//                .questions(questions)
+//                .build();
+//    }
+
 }
