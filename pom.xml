@@ -83,6 +83,14 @@
             <version>2.3.0</version>
         </dependency>
 
+        <!-- iText7 Core -->
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itext-core</artifactId>
+            <version>9.1.0</version>
+            <type>pom</type>
+        </dependency>
+
     </dependencies>
 
     <build>

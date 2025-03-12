@@ -4,9 +4,11 @@ import com.cj.genieq.member.dto.response.LoginMemberResponseDto;
 import com.cj.genieq.passage.dto.request.*;
 import com.cj.genieq.passage.dto.response.*;
 import com.cj.genieq.passage.service.PassageService;
+import com.cj.genieq.passage.service.PdfService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,7 @@ import java.util.List;
 public class PassageController {
 
     private final PassageService passageService;
+    private final PdfService pdfService;
 
     @PostMapping("/insert/each")
     public ResponseEntity<?> insertEach(HttpSession session, @RequestBody PassageInsertRequestDto passageDto) {
@@ -231,5 +234,30 @@ public class PassageController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("서버에서 오류가 발생했습니다: " + e.getMessage());
         }
+    }
+
+//    @GetMapping("/export/each")
+//    public ResponseEntity<byte[]> generatePdf(@RequestParam String content) {
+//
+//
+//        byte[] pdfData = pdfService.createPdf(content);
+//
+//        // PDF 다운로드 설정
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Content-Disposition", "attachment; filename=document.pdf");
+//        headers.add("Content-Type", "application/pdf");
+//
+//        return new ResponseEntity<>(pdfData, headers, HttpStatus.OK);
+//    }
+
+    @PostMapping("/export/each")
+    public ResponseEntity<byte[]> generatePdf(@RequestBody String jsonData) {
+        byte[] pdfData = pdfService.createPdfFromJson(jsonData);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=document.pdf");
+        headers.add("Content-Type", "application/pdf");
+
+        return new ResponseEntity<>(pdfData, headers, HttpStatus.OK);
     }
 }
