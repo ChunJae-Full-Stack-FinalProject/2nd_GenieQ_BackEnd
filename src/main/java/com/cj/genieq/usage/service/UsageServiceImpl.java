@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,13 +22,13 @@ public class UsageServiceImpl implements UsageService{
     private final MemberRepository memberRepository;
 
     public List<UsageListResponseDto> getUsageList(
-            Long memCode, LocalDate startDate, LocalDate endDate, int page, int size) {
+            Long memCode, LocalDate startDate, LocalDate endDate) {
 
-        int startRow = page * size;
-        int endRow = startRow + size;
+        LocalDateTime startOfDay = startDate.atStartOfDay();
+        LocalDateTime endOfDay = endDate.atTime(23, 59, 59, 999999999);
 
         List<UsageEntity> usageEntities = usageRepository.findByMemCodeAndDateRange(
-                memCode, startDate, endDate, startRow, endRow);
+                memCode, startOfDay, endOfDay);
 
         return usageEntities.stream()
                 .map(usage -> UsageListResponseDto.builder()
@@ -49,7 +50,13 @@ public class UsageServiceImpl implements UsageService{
                 .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
 
         // 2. 가장 최근 잔액을 가져옴
-        int lastBalance = usageRepository.findLatestBalanceByMemberCode(memCode);
+        Integer lastBalance = 0;
+        Optional<Integer> latestBalanceOptional = usageRepository.findLatestBalanceByMemberCode(memCode);
+
+        if (latestBalanceOptional.isPresent()) {
+            // 값을 사용
+            lastBalance = latestBalanceOptional.get();
+        }
 
         // 3. 새로운 잔액 계산
         int newBalance = lastBalance + count;

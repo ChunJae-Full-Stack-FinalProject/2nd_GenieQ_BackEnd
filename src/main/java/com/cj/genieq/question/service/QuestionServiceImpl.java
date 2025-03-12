@@ -9,9 +9,4 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class QuestionServiceImpl implements QuestionService {
 
-
-    @Override
-    public QuestionDto saveQuestion(QuestionDto question) {
-        return null;
-    }
 }

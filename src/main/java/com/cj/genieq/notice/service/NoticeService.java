@@ -6,6 +6,6 @@ import com.cj.genieq.notice.dto.response.NoticeResponseDto;
 import java.util.List;
 
 public interface NoticeService {
-    List<NoticeListResponseDto> getNoticeList(String type, int page, int size);
+    List<NoticeListResponseDto> getNoticeList();
     NoticeResponseDto getNotice(Long notCode);
 }
