@@ -23,8 +23,6 @@ public class UsageController {
     public ResponseEntity<?> selectList(
             @RequestParam("startDate")LocalDate startDate,
             @RequestParam("endDate") LocalDate endDate,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "12") int size,
             HttpSession session){
         LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
 
@@ -32,7 +30,7 @@ public class UsageController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
 
-        List<UsageListResponseDto> usages = usageService.getUsageList(loginMember.getMemberCode(), startDate, endDate, page, size);
+        List<UsageListResponseDto> usages = usageService.getUsageList(loginMember.getMemberCode(), startDate, endDate);
         return ResponseEntity.ok(usages);
     }
     

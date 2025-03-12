@@ -12,16 +12,12 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class NoticeServiceImpl implements NoticeService {
-
     private final NoticeRepository noticeRepository;
 
     @Override
-    public List<NoticeListResponseDto> getNoticeList(String type, int page, int size) {
+    public List<NoticeListResponseDto> getNoticeList() {
 
-        int startRow = page * size;
-        int endRow = startRow + size;
-
-        List<NoticeEntity> entities = noticeRepository.selectByType(type, startRow, endRow);
+        List<NoticeEntity> entities = noticeRepository.findAllByOrderByDateDesc();
 
         List<NoticeListResponseDto> result = entities.stream()
                 .map(entity->NoticeListResponseDto.builder()
