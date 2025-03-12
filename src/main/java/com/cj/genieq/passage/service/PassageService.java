@@ -5,7 +5,6 @@ import com.cj.genieq.passage.dto.request.PassageInsertRequestDto;
 import com.cj.genieq.passage.dto.request.PassageUpdateRequestDto;
 import com.cj.genieq.passage.dto.request.PassageWithQuestionsRequestDto;
 import com.cj.genieq.passage.dto.response.*;
-import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
 

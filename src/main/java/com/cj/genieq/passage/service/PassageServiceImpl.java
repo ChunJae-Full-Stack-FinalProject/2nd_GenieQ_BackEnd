@@ -10,10 +10,7 @@ import com.cj.genieq.passage.dto.response.*;
 import com.cj.genieq.passage.entity.PassageEntity;
 import com.cj.genieq.passage.repository.PassageRepository;
 import com.cj.genieq.question.dto.request.QuestionInsertRequestDto;
-import com.cj.genieq.question.dto.response.QuestionSelectResponseDto;
-import com.cj.genieq.question.entity.QuestionEntity;
 import com.cj.genieq.question.service.QuestionService;
-import com.cj.genieq.usage.repository.UsageRepository;
 import com.cj.genieq.usage.service.UsageService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
