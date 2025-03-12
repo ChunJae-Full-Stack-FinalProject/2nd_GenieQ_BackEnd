@@ -50,5 +50,18 @@ public interface PassageRepository extends JpaRepository<PassageEntity,Long> {
             @Param("rn") Integer rn
     );
 
+    // 즐겨찾기 150개 리스트
+    @Query(value = "SELECT * FROM ( " +
+            "    SELECT p.* FROM PASSAGE p " +
+            "    WHERE p.MEM_CODE = :memCode " +
+            "    AND p.PAS_IS_FAVORITE = 1 " +
+            "    ORDER BY p.PAS_DATE DESC " +
+            ") WHERE ROWNUM <= 150 " +
+            "AND PAS_IS_DELETED = 0", nativeQuery = true)
+    List<PassageEntity> selectTop150FavoritePassages(
+            @Param("memCode") Long memCode
+    );
+
+
 
 }

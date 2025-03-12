@@ -163,4 +163,18 @@ public class PassageController {
         }
     }
 
+    @GetMapping("/select/favolist")
+    public ResponseEntity<?> selectFavoList(HttpSession session) {
+        LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
+
+        // 로그인 상태 확인
+        if (loginMember == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        List<PassageStorageEachResponseDto> favorites = passageService.selectFavoriteList(loginMember.getMemberCode());
+
+        return ResponseEntity.ok(favorites);
+    }
+
 }

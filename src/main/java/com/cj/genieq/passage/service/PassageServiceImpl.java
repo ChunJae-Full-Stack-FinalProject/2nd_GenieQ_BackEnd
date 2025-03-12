@@ -270,4 +270,26 @@ public class PassageServiceImpl implements PassageService {
 
         return passages;
     }
+
+    @Override
+    public List<PassageStorageEachResponseDto> selectFavoriteList(Long memCode) {
+        List<PassageEntity> passageEntities = passageRepository.selectTop150FavoritePassages(memCode);
+
+        // 조회 결과가 없으면 빈 리스트 반환
+        if (passageEntities == null || passageEntities.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<PassageStorageEachResponseDto> passages = passageEntities.stream()
+                .map(p -> PassageStorageEachResponseDto.builder()
+                        .title(p.getTitle())
+                        .keyword(p.getKeyword())
+                        .isGenerated(p.getIsGenerated())
+                        .date(p.getDate().toLocalDate())
+                        .isFavorite(p.getIsFavorite())
+                        .build())
+                .collect(Collectors.toList());
+
+        return passages;
+    }
 }
