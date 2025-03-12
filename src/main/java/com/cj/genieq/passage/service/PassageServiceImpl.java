@@ -6,10 +6,7 @@ import com.cj.genieq.passage.dto.request.PassageFavoriteRequestDto;
 import com.cj.genieq.passage.dto.request.PassageInsertRequestDto;
 import com.cj.genieq.passage.dto.request.PassageUpdateRequestDto;
 import com.cj.genieq.passage.dto.request.PassageWithQuestionsRequestDto;
-import com.cj.genieq.passage.dto.response.PassageFavoriteResponseDto;
-import com.cj.genieq.passage.dto.response.PassagePreviewListDto;
-import com.cj.genieq.passage.dto.response.PassageSelectResponseDto;
-import com.cj.genieq.passage.dto.response.PassageWithQuestionsResponseDto;
+import com.cj.genieq.passage.dto.response.*;
 import com.cj.genieq.passage.entity.PassageEntity;
 import com.cj.genieq.passage.repository.PassageRepository;
 import com.cj.genieq.question.dto.request.QuestionInsertRequestDto;
@@ -27,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -167,28 +165,6 @@ public class PassageServiceImpl implements PassageService {
 
     }
 
-//    @Override
-//    @Transactional(readOnly = true)
-//    public List<PassageTitleListDto> getPaginatedPassagesByTitle(Long memCode, String title, int page, int size) {
-//        String searchKeyword = "%" + title + "%";
-//
-//        int startRow = page * size;
-//        int endRow = startRow + size;
-//
-//        List<PassageEntity> result = passageRepository
-//                .findByMemCodeAndKeyword(memCode, searchKeyword, startRow, endRow);
-//
-//        return result.stream()
-//                .map(passage -> PassageTitleListDto.builder()
-//                        .passageCode(passage.getPasCode())
-//                        .passageTitle(passage.getTitle())
-//                        .subjectKeyword(passage.getSubject().getSubKeyword())
-//                        .date(passage.getDate())
-//                        .favorite(passage.getIsFavorite())
-//                        .build())
-//                .toList();
-//    }
-
     @Override
     @Transactional
     public PassageFavoriteResponseDto favoritePassage(PassageFavoriteRequestDto requestDto){
@@ -273,4 +249,25 @@ public class PassageServiceImpl implements PassageService {
                 .build();
     }
 
+    @Override
+    public List<PassageStorageEachResponseDto> selectPassageListInStorage(Long memCode, Integer isFavorite, Integer rownum) {
+        List<PassageEntity> passageEntities = passageRepository.selectPassageListInStorage(memCode, isFavorite, rownum);
+
+        // 조회 결과가 없으면 빈 리스트 반환
+        if (passageEntities == null || passageEntities.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<PassageStorageEachResponseDto> passages = passageEntities.stream()
+                .map(p -> PassageStorageEachResponseDto.builder()
+                        .title(p.getTitle())
+                        .keyword(p.getKeyword())
+                        .isGenerated(p.getIsGenerated())
+                        .date(p.getDate().toLocalDate())
+                        .isFavorite(p.getIsFavorite())
+                        .build())
+                .collect(Collectors.toList());
+
+        return passages;
+    }
 }

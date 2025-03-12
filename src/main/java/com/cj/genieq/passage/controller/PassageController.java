@@ -5,10 +5,7 @@ import com.cj.genieq.passage.dto.request.PassageFavoriteRequestDto;
 import com.cj.genieq.passage.dto.request.PassageInsertRequestDto;
 import com.cj.genieq.passage.dto.request.PassageUpdateRequestDto;
 import com.cj.genieq.passage.dto.request.PassageWithQuestionsRequestDto;
-import com.cj.genieq.passage.dto.response.PassageFavoriteResponseDto;
-import com.cj.genieq.passage.dto.response.PassageSelectResponseDto;
-import com.cj.genieq.passage.dto.response.PassageWithQuestionsResponseDto;
-import com.cj.genieq.passage.dto.response.PassagePreviewListDto;
+import com.cj.genieq.passage.dto.response.*;
 import com.cj.genieq.passage.service.PassageService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
@@ -16,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.dao.DataAccessException;
 
 import java.util.List;
 
@@ -107,17 +105,6 @@ public class PassageController {
         }
     }
 
-//    @GetMapping("/select/list")
-//    public ResponseEntity<?> getPaginatedPassages(
-//            @RequestParam("memCode") Long memCode,
-//            @RequestParam("keyword") String keyword,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size) {
-//        List<PassageTitleListDto> passages= passageService.getPaginatedPassagesByTitle(memCode, keyword, page, size);
-//        return ResponseEntity.ok(passages);
-//
-//    }
-
     @PatchMapping("/favo")
     public ResponseEntity<PassageFavoriteResponseDto> favoritePassage(@RequestBody PassageFavoriteRequestDto requestDto) {
         PassageFavoriteResponseDto responseDto = passageService.favoritePassage(requestDto);
@@ -145,6 +132,35 @@ public class PassageController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @GetMapping("/select/list")
+    public ResponseEntity<?> selectList(HttpSession session) {
+        LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
 
+        // 로그인 상태 확인
+        if (loginMember == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        try {
+            List<PassageStorageEachResponseDto> favorites = passageService.selectPassageListInStorage(loginMember.getMemberCode(), 1, 5);
+            List<PassageStorageEachResponseDto> recent = passageService.selectPassageListInStorage(loginMember.getMemberCode(), 0, 8);
+
+            PassageStorageMainResponseDto responseDto = PassageStorageMainResponseDto.builder()
+                    .favorites(favorites)
+                    .recent(recent)
+                    .build();
+
+            return ResponseEntity.ok(responseDto);
+        } catch (IllegalArgumentException e) {
+            // 잘못된 파라미터 값 예외 처리
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 요청입니다: " + e.getMessage());
+        } catch (DataAccessException e) {
+            // DB 오류 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("데이터베이스 오류가 발생했습니다.");
+        } catch (Exception e) {
+            // 기타 예외 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버에서 문제가 발생했습니다.");
+        }
+    }
 
 }
