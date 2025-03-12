@@ -8,12 +8,12 @@ import com.cj.genieq.passage.dto.response.PassageFavoriteResponseDto;
 import com.cj.genieq.passage.dto.response.PassageSelectResponseDto;
 import com.cj.genieq.passage.dto.response.PassagePreviewListDto;
 import com.cj.genieq.passage.dto.response.PassageWithQuestionsResponseDto;
+import com.cj.genieq.passage.dto.response.*;
 
 import java.util.List;
 
 public interface PassageService {
     PassageSelectResponseDto savePassage(Long memCode, PassageInsertRequestDto passageDto);
-    //List<PassageTitleListDto> getPaginatedPassagesByTitle(Long memCode, String title, int page, int size);
     PassageFavoriteResponseDto favoritePassage(PassageFavoriteRequestDto requestDto);
     PassageSelectResponseDto updatePassage(PassageUpdateRequestDto passageDto);
     List<PassagePreviewListDto> getPreviewList(Long memCode);
@@ -22,4 +22,7 @@ public interface PassageService {
     PassageWithQuestionsResponseDto savePassageWithQuestions(Long memCode, PassageWithQuestionsRequestDto requestDto);
     PassageWithQuestionsResponseDto getPassageWithQuestions(Long pasCode);
     public Long updatePassage(Long pasCode, PassageWithQuestionsRequestDto requestDto);
+    List<PassageStorageEachResponseDto> selectPassageListInStorage(Long memCode, Integer isFavorite, Integer rownum);
+    List<PassageStorageEachResponseDto> selectFavoriteList(Long memCode);
+    List<PassageStorageEachResponseDto> selectRecentList(Long memCode);
 }
