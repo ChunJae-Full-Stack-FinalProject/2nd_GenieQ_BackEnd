@@ -21,5 +21,5 @@ public interface PassageService {
 
     PassageWithQuestionsResponseDto savePassageWithQuestions(Long memCode, PassageWithQuestionsRequestDto requestDto);
     PassageWithQuestionsResponseDto getPassageWithQuestions(Long pasCode);
-    PassageWithQuestionsResponseDto updatePassage(Long pasCode, PassageWithQuestionsRequestDto requestDto);
+    public Long updatePassage(Long pasCode, PassageWithQuestionsRequestDto requestDto);
 }

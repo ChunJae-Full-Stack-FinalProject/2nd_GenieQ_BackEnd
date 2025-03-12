@@ -150,12 +150,12 @@ public class PassageController {
 
     // 지문 + 문항 수정
     @PutMapping("/ques/update/{pasCode}")
-    public ResponseEntity<PassageWithQuestionsResponseDto> updatePassage(
+    public ResponseEntity<Long> updatePassage(
             @PathVariable Long pasCode,
             @RequestBody PassageWithQuestionsRequestDto requestDto) {
 
-        PassageWithQuestionsResponseDto updatedPassage = passageService.updatePassage(pasCode, requestDto);
-        return ResponseEntity.ok(updatedPassage);
+        Long updatedPasCode = passageService.updatePassage(pasCode, requestDto);
+        return ResponseEntity.ok(updatedPasCode);
     }
 
 }
