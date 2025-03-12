@@ -2,6 +2,7 @@ package com.cj.genieq.passage.repository;
 
 import com.cj.genieq.passage.entity.PassageEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -72,6 +73,14 @@ public interface PassageRepository extends JpaRepository<PassageEntity,Long> {
             @Param("memCode") Long memCode
     );
 
+    @Modifying
+    @Query("UPDATE PassageEntity p " +
+            "SET p.isDeleted = 1 " +
+            "WHERE p.pasCode IN :pasCodeList")
+    int updateIsDeletedByPasCodeList(@Param("pasCodeList") List<Long> pasCodeList);
 
-
+    // 작업명(지문 이름) 변경
+    @Modifying
+    @Query("UPDATE PassageEntity p SET p.title = :title WHERE p.pasCode = :pasCode")
+    int updateTitleByPasCode(@Param("pasCode") Long pasCode, @Param("title") String title);
 }
