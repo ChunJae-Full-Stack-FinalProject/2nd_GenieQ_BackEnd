@@ -332,4 +332,35 @@ public class PassageServiceImpl implements PassageService {
             return false;
         }
     }
+
+    // 작업명(지문 이름) 변경
+    @Transactional
+    @Override
+    public boolean updatePassageTitle(PassageUpdateTitleRequestDto requestDto) {
+        if (requestDto.getTitle() == null || requestDto.getTitle().isEmpty()) {
+            throw new IllegalArgumentException("수정할 제목이 없습니다.");
+        }
+
+        // 수정할 대상이 있는지 먼저 확인
+        PassageEntity passage = passageRepository.findById(requestDto.getPasCode())
+                .orElseThrow(() -> new IllegalArgumentException("해당 지문이 존재하지 않습니다."));
+
+        // 같은 제목이면 쿼리 실행 방지
+        if (passage.getTitle().equals(requestDto.getTitle())) {
+            return false;
+        }
+
+        // 제목 중복 처리
+        String title = generateTitle(requestDto.getTitle());
+
+        // 수정 실행
+        int updatedCount = passageRepository.updateTitleByPasCode(requestDto.getPasCode(),title);
+
+        // 수정이 실패
+        if (updatedCount == 0) {
+            throw new IllegalStateException("지문 제목 수정에 실패했습니다.");
+        }
+
+        return true;
+    }
 }

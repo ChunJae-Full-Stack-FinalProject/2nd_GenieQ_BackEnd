@@ -79,4 +79,8 @@ public interface PassageRepository extends JpaRepository<PassageEntity,Long> {
             "WHERE p.pasCode IN :pasCodeList")
     int updateIsDeletedByPasCodeList(@Param("pasCodeList") List<Long> pasCodeList);
 
+    // 작업명(지문 이름) 변경
+    @Modifying
+    @Query("UPDATE PassageEntity p SET p.title = :title WHERE p.pasCode = :pasCode")
+    int updateTitleByPasCode(@Param("pasCode") Long pasCode, @Param("title") String title);
 }

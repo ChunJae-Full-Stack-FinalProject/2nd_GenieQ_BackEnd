@@ -18,4 +18,5 @@ public interface PassageService {
     List<PassageStorageEachResponseDto> selectFavoriteList(Long memCode);
     List<PassageStorageEachResponseDto> selectRecentList(Long memCode);
     boolean deletePassage(PassageDeleteRequestDto requestDto);
+    boolean updatePassageTitle(PassageUpdateTitleRequestDto requestDto);
 }

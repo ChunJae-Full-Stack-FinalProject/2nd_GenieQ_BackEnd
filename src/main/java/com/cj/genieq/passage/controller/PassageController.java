@@ -210,4 +210,26 @@ public class PassageController {
                     .body("서버에서 오류가 발생했습니다: " + e.getMessage());
         }
     }
+
+    // 작업명(지문 이름) 변경
+    @PutMapping("/update/title")
+    public ResponseEntity<?> updatePassageTitle(@RequestBody PassageUpdateTitleRequestDto requestDto) {
+        if (requestDto.getPasCode() == null || requestDto.getTitle() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("필수 값이 없습니다.");
+        }
+
+        try {
+            boolean result = passageService.updatePassageTitle(requestDto);
+            if (result) {
+                return ResponseEntity.ok("지문 제목이 수정되었습니다.");
+            } else {
+                return ResponseEntity.status(HttpStatus.OK).body("기존 제목과 동일합니다.");
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("서버에서 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
 }
