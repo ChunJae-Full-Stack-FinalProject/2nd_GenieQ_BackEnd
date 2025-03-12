@@ -221,7 +221,7 @@ public class PassageServiceImpl implements PassageService {
         return title;
     }
 
-    // ✅ 지문 + 문항 저장 (트랜잭션 적용)
+    // 지문 + 문항 저장 (트랜잭션 적용)
     @Transactional
     public Long savePassageWithQuestions(Long memCode, PassageWithQuestionsRequestDto requestDto) {
         // 1. 지문 엔티티 생성
@@ -238,7 +238,7 @@ public class PassageServiceImpl implements PassageService {
         // 2. 지문 저장
         PassageEntity savedPassage = passageRepository.save(passage);
 
-        // ✅ 3. 문항 저장은 QuestionService에서 처리
+        // 3. 문항 저장은 QuestionService에서 처리
         questionService.saveQuestions(savedPassage, requestDto.getQuestions());
         usageService.updateUsage(memCode, -1, "문항 생성");
 
@@ -246,31 +246,31 @@ public class PassageServiceImpl implements PassageService {
         return savedPassage.getPasCode();
     }
 
-//    // ✅ 지문 + 문항 조회
-//    @Transactional(readOnly = true)
-//    public PassageWithQuestionsRequestDto getPassageWithQuestions(Long pasCode) {
-//        // 1. 지문 + 문항 조회 (JOIN 처리)
-//        PassageEntity passage = passageRepository.findById(pasCode)
-//                .orElseThrow(() -> new IllegalArgumentException("지문이 존재하지 않습니다."));
-//
-//        // 2. 엔티티 → DTO 변환
-//        List<QuestionInsertRequestDto> questions = passage.getQuestions().stream()
-//                .map(q -> QuestionInsertRequestDto.builder()
-//                        .queQuery(q.getQueQuery())
-//                        .queOption(List.of(q.getQueOption().split(","))) // String → JSON 변환
-//                        .queAnswer(q.getQueAnswer())
-//                        .build())
-//                .collect(Collectors.toList());
-//
-//        return PassageWithQuestionsRequestDto.builder()
-//                .type(passage.getPasType())
-//                .keyword(passage.getKeyword())
-//                .title(passage.getTitle())
-//                .content(passage.getContent())
-//                .gist(passage.getGist())
-//                .isGenerated(passage.getIsGenerated())
-//                .questions(questions)
-//                .build();
-//    }
+    // 지문 + 문항 조회
+    @Transactional(readOnly = true)
+    public PassageWithQuestionsRequestDto getPassageWithQuestions(Long pasCode) {
+        // 1. 지문 + 문항 조회 (JOIN 처리)
+        PassageEntity passage = passageRepository.findById(pasCode)
+                .orElseThrow(() -> new IllegalArgumentException("지문이 존재하지 않습니다."));
+
+        // 2. 엔티티 → DTO 변환
+        List<QuestionInsertRequestDto> questions = passage.getQuestions().stream()
+                .map(q -> QuestionInsertRequestDto.builder()
+                        .queQuery(q.getQueQuery())
+                        .queOption(List.of(q.getQueOption().split(","))) // String → JSON 변환
+                        .queAnswer(q.getQueAnswer())
+                        .build())
+                .collect(Collectors.toList());
+
+        return PassageWithQuestionsRequestDto.builder()
+                .type(passage.getPasType())
+                .keyword(passage.getKeyword())
+                .title(passage.getTitle())
+                .content(passage.getContent())
+                .gist(passage.getGist())
+                .isGenerated(passage.getIsGenerated())
+                .questions(questions)
+                .build();
+    }
 
 }

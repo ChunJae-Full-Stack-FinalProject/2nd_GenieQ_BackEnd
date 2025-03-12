@@ -139,12 +139,12 @@ public class PassageController {
         return ResponseEntity.ok(pasCode);
     }
 
-//    // ✅ 지문 + 문항 조회
-//    @GetMapping("/{pasCode}")
-//    public ResponseEntity<PassageWithQuestionsRequestDto> getPassage(@PathVariable Long pasCode) {
-//        PassageWithQuestionsRequestDto responseDto = passageService.getPassageWithQuestions(pasCode);
-//        return ResponseEntity.ok(responseDto);
-//    }
+    // 지문 + 문항 조회
+    @GetMapping("/{pasCode}")
+    public ResponseEntity<PassageWithQuestionsRequestDto> getPassage(@PathVariable Long pasCode) {
+        PassageWithQuestionsRequestDto responseDto = passageService.getPassageWithQuestions(pasCode);
+        return ResponseEntity.ok(responseDto);
+    }
 
 
 

@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
 
-    // ✅ 문항 저장 로직 이동
+    // 문항 저장 로직 이동
     public void saveQuestions(PassageEntity savedPassage, List<QuestionInsertRequestDto> questions) {
         List<QuestionEntity> questionEntities = questions.stream()
                 .map(q -> QuestionEntity.builder()
