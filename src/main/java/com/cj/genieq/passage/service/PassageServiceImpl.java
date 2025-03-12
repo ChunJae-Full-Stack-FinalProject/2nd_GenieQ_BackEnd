@@ -2,19 +2,12 @@ package com.cj.genieq.passage.service;
 
 import com.cj.genieq.member.entity.MemberEntity;
 import com.cj.genieq.member.repository.MemberRepository;
-import com.cj.genieq.passage.dto.request.PassageFavoriteRequestDto;
-import com.cj.genieq.passage.dto.request.PassageInsertRequestDto;
-import com.cj.genieq.passage.dto.request.PassageUpdateRequestDto;
-import com.cj.genieq.passage.dto.request.PassageWithQuestionsRequestDto;
-import com.cj.genieq.passage.dto.response.PassageFavoriteResponseDto;
-import com.cj.genieq.passage.dto.response.PassagePreviewListDto;
-import com.cj.genieq.passage.dto.response.PassageSelectResponseDto;
-import com.cj.genieq.passage.dto.response.PassageWithQuestionsResponseDto;
-import com.cj.genieq.question.dto.request.QuestionUpdateRequestDto;
+import com.cj.genieq.passage.dto.request.*;
 import com.cj.genieq.passage.dto.response.*;
 import com.cj.genieq.passage.entity.PassageEntity;
 import com.cj.genieq.passage.repository.PassageRepository;
 import com.cj.genieq.question.dto.request.QuestionInsertRequestDto;
+import com.cj.genieq.question.dto.request.QuestionUpdateRequestDto;
 import com.cj.genieq.question.dto.response.QuestionSelectResponseDto;
 import com.cj.genieq.question.service.QuestionService;
 import com.cj.genieq.usage.service.UsageService;
@@ -391,6 +384,7 @@ public class PassageServiceImpl implements PassageService {
         List<PassageStorageEachResponseDto> passages = passageEntities.stream()
                 .filter(p -> p.getIsDeleted() == 0) // isDeleted = 0 필터링
                 .map(p -> PassageStorageEachResponseDto.builder()
+                        .pasCode(p.getPasCode())
                         .title(p.getTitle())
                         .keyword(p.getKeyword())
                         .isGenerated(p.getIsGenerated())
@@ -400,5 +394,53 @@ public class PassageServiceImpl implements PassageService {
                 .collect(Collectors.toList());
 
         return passages;
+    }
+
+    // 지문 삭제
+    @Transactional
+    @Override
+    public boolean deletePassage(PassageDeleteRequestDto requestDto) {
+        List<Long> pasCodeList = requestDto.getPasCodeList();
+
+        try {
+            int updatedCount = passageRepository.updateIsDeletedByPasCodeList(pasCodeList);
+            // 업데이트된 개수가 전달받은 리스트 크기와 같으면 성공
+            return updatedCount == pasCodeList.size();
+        } catch (Exception e) {
+            // 삭제 실패 시 로그 기록
+            System.err.println("삭제 실패: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // 작업명(지문 이름) 변경
+    @Transactional
+    @Override
+    public boolean updatePassageTitle(PassageUpdateTitleRequestDto requestDto) {
+        if (requestDto.getTitle() == null || requestDto.getTitle().isEmpty()) {
+            throw new IllegalArgumentException("수정할 제목이 없습니다.");
+        }
+
+        // 수정할 대상이 있는지 먼저 확인
+        PassageEntity passage = passageRepository.findById(requestDto.getPasCode())
+                .orElseThrow(() -> new IllegalArgumentException("해당 지문이 존재하지 않습니다."));
+
+        // 같은 제목이면 쿼리 실행 방지
+        if (passage.getTitle().equals(requestDto.getTitle())) {
+            return false;
+        }
+
+        // 제목 중복 처리
+        String title = generateTitle(requestDto.getTitle());
+
+        // 수정 실행
+        int updatedCount = passageRepository.updateTitleByPasCode(requestDto.getPasCode(),title);
+
+        // 수정이 실패
+        if (updatedCount == 0) {
+            throw new IllegalStateException("지문 제목 수정에 실패했습니다.");
+        }
+
+        return true;
     }
 }

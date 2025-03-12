@@ -8,6 +8,7 @@ import com.cj.genieq.passage.dto.response.PassageFavoriteResponseDto;
 import com.cj.genieq.passage.dto.response.PassageSelectResponseDto;
 import com.cj.genieq.passage.dto.response.PassagePreviewListDto;
 import com.cj.genieq.passage.dto.response.PassageWithQuestionsResponseDto;
+import com.cj.genieq.passage.dto.request.*;
 import com.cj.genieq.passage.dto.response.*;
 
 import java.util.List;
@@ -27,4 +28,6 @@ public interface PassageService {
     List<PassageStorageEachResponseDto> selectPassageListInStorage(Long memCode, Integer isFavorite, Integer rownum);
     List<PassageStorageEachResponseDto> selectFavoriteList(Long memCode);
     List<PassageStorageEachResponseDto> selectRecentList(Long memCode);
+    boolean deletePassage(PassageDeleteRequestDto requestDto);
+    boolean updatePassageTitle(PassageUpdateTitleRequestDto requestDto);
 }

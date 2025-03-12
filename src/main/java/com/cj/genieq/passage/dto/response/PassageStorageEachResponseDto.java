@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 public class PassageStorageEachResponseDto {
+    private Long pasCode;
     private String title;
     private String keyword;
     private Integer isGenerated;
