@@ -6,9 +6,8 @@ import com.cj.genieq.passage.dto.request.PassageUpdateRequestDto;
 import com.cj.genieq.passage.dto.request.PassageWithQuestionsRequestDto;
 import com.cj.genieq.passage.dto.response.PassageFavoriteResponseDto;
 import com.cj.genieq.passage.dto.response.PassageSelectResponseDto;
-import com.cj.genieq.passage.dto.response.PassageWithQuestionsResponseDto;
 import com.cj.genieq.passage.dto.response.PassagePreviewListDto;
-import jakarta.servlet.http.HttpSession;
+import com.cj.genieq.passage.dto.response.PassageWithQuestionsResponseDto;
 
 import java.util.List;
 
@@ -20,6 +19,7 @@ public interface PassageService {
     List<PassagePreviewListDto> getPreviewList(Long memCode);
     PassageSelectResponseDto selectPassage(Long pasCode);
 
-    Long savePassageWithQuestions(Long memCode, PassageWithQuestionsRequestDto requestDto);
-    PassageWithQuestionsRequestDto getPassageWithQuestions(Long pasCode);
+    PassageWithQuestionsResponseDto savePassageWithQuestions(Long memCode, PassageWithQuestionsRequestDto requestDto);
+    PassageWithQuestionsResponseDto getPassageWithQuestions(Long pasCode);
+    PassageWithQuestionsResponseDto updatePassage(Long pasCode, PassageWithQuestionsRequestDto requestDto);
 }
