@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QuestionUpdateRequestDto {
+    private Long queCode;
     private String queQuery; //질문
     private List<String> queOption; //보기
     private String queAnswer; //해설

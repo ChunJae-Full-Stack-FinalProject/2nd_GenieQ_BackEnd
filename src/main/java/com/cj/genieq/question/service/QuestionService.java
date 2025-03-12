@@ -9,6 +9,5 @@ import java.util.List;
 
 public interface QuestionService {
     List<QuestionSelectResponseDto> saveQuestions(PassageEntity savedPassage, List<QuestionInsertRequestDto> questions);
-    void updateQuestions(PassageEntity passage, List<QuestionUpdateRequestDto> questions);
-
+    List<QuestionSelectResponseDto> updateQuestions(PassageEntity passage, List<QuestionUpdateRequestDto> questions);
 }

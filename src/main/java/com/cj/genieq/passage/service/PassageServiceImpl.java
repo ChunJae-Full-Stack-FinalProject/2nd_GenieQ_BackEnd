@@ -251,6 +251,7 @@ public class PassageServiceImpl implements PassageService {
                 .orElseThrow(() -> new IllegalArgumentException("지문이 존재하지 않습니다."));
 
         // 2. 엔티티 → DTO 변환
+        // 지문+문항 조회하는 작업은 지문엔티티에 의존하므로 지문 서비스의 책임에 해당해서 문항 서비스에 메서드를 추가하지 않은 것이다.
         List<QuestionSelectResponseDto> questions = passage.getQuestions().stream()
                 .map(q -> QuestionSelectResponseDto.builder()
                         .queCode(q.getQueCode())
@@ -278,7 +279,7 @@ public class PassageServiceImpl implements PassageService {
 
     //지문 수정 + 문항 수정
     @Transactional
-    public Long updatePassage(Long pasCode, PassageWithQuestionsRequestDto requestDto) {
+    public PassageWithQuestionsResponseDto updatePassage(Long pasCode, PassageWithQuestionsRequestDto requestDto) {
         // 1. 기존 지문 조회
         PassageEntity passage = passageRepository.findById(pasCode)
                 .orElseThrow(() -> new IllegalArgumentException("지문이 존재하지 않습니다."));
@@ -303,21 +304,31 @@ public class PassageServiceImpl implements PassageService {
             passage.setIsGenerated(requestDto.getIsGenerated());
         }
 
-        //문항 수정은 QuestionService에서 처리
-        if (requestDto.getQuestions() != null) {
-            // QuestionInsertRequestDto → QuestionUpdateRequestDto 변환 필요
-            List<QuestionUpdateRequestDto> questionDtos = requestDto.getQuestions().stream()
-                    .map(q -> QuestionUpdateRequestDto.builder()
-                            .queQuery(q.getQueQuery())
-                            .queOption(q.getQueOption())
-                            .queAnswer(q.getQueAnswer())
-                            .build())
-                    .collect(Collectors.toList());
+        // INSERT → UPDATE 변환 처리 추가
+        List<QuestionUpdateRequestDto> questionDtos = requestDto.getQuestions().stream()
+                .map(q -> QuestionUpdateRequestDto.builder()
+                        .queCode(q.getQueCode())
+                        .queQuery(q.getQueQuery())
+                        .queOption(q.getQueOption())
+                        .queAnswer(q.getQueAnswer())
+                        .build())
+                .collect(Collectors.toList());
 
-            questionService.updateQuestions(passage, questionDtos);
-        }
+        //문항 수정 후 반환된 값 받아서 그대로 사용
+        List<QuestionSelectResponseDto> updatedQuestions = questionService.updateQuestions(passage, questionDtos);
 
-        return passage.getPasCode(); // 수정된 지문 코드 반환
+        // 응답 DTO 생성 후 변수에 저장
+        PassageWithQuestionsResponseDto responseDto = PassageWithQuestionsResponseDto.builder()
+                .pasCode(passage.getPasCode())
+                .title(passage.getTitle())
+                .type(passage.getPasType())
+                .keyword(passage.getKeyword())
+                .content(passage.getContent())
+                .gist(passage.getGist())
+                .questions(updatedQuestions)
+                .build();
+
+        return responseDto;
     }
 
     // 자료실 메인화면 리스트(즐겨찾기+최근 작업)

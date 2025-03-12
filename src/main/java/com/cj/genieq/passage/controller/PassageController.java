@@ -136,14 +136,14 @@ public class PassageController {
     }
 
     // 지문 + 문항 수정
-//    @PutMapping("/ques/update/{pasCode}")
-//    public ResponseEntity<Long> updatePassage(
-//            @PathVariable Long pasCode,
-//            @RequestBody PassageWithQuestionsRequestDto requestDto) {
-//        PassageWithQuestionsResponseDto updatedPassage = passageService.updatePassage(pasCode, requestDto);
-//        return ResponseEntity.ok(updatedPassage);
-//
-//    }
+    @PutMapping("/ques/update/{pasCode}")
+    public ResponseEntity<PassageWithQuestionsResponseDto> updatePassage(
+            @PathVariable Long pasCode,
+            @RequestBody PassageWithQuestionsRequestDto requestDto) {
+        PassageWithQuestionsResponseDto updatedPassage = passageService.updatePassage(pasCode, requestDto);
+        return ResponseEntity.ok(updatedPassage);
+
+    }
 
     // 자료실 메인화면 리스트(즐겨찾기+최근 작업)
     @GetMapping("/select/list")

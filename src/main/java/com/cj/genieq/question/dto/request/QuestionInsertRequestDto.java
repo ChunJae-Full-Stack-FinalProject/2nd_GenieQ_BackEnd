@@ -14,6 +14,7 @@ import java.util.List;
 
 //문항 저장에 사용
 public class QuestionInsertRequestDto {
+    private Long queCode;
     private String queQuery; //질문
     private List<String> queOption; //보기
     private String queAnswer; //해설

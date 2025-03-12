@@ -43,7 +43,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     //기존 문항 삭제 후 새 문항 저장
-    public void updateQuestions(PassageEntity passage, List<QuestionUpdateRequestDto> questions) {
+    public List<QuestionSelectResponseDto> updateQuestions(PassageEntity passage, List<QuestionUpdateRequestDto> questions) {
         // 기존 문항 삭제
         questionRepository.deleteByPassage(passage);
 
@@ -57,7 +57,18 @@ public class QuestionServiceImpl implements QuestionService {
                         .build())
                 .collect(Collectors.toList());
 
-        questionRepository.saveAll(newQuestions);
+        List<QuestionEntity> updatedQuestions = questionRepository.saveAll(newQuestions);
+
+        // 저장된 값 반환
+        return updatedQuestions.stream()
+                .map(q -> QuestionSelectResponseDto.builder()
+                        .queCode(q.getQueCode())
+                        .queQuery(q.getQueQuery())
+                        .queOption(List.of(q.getQueOption().split(",")))
+                        .queAnswer(q.getQueAnswer())
+                        .build())
+                .collect(Collectors.toList());
+
     }
 
 }
