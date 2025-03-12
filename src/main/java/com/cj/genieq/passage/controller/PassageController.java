@@ -31,10 +31,10 @@ public class PassageController {
         if (loginMember == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
-        
+
         // 지문 생성
         PassageSelectResponseDto savedPassage = passageService.savePassage(loginMember.getMemberCode(), passageDto);
-                
+
         if (savedPassage != null) {
             return ResponseEntity.ok(savedPassage);
         } else {
@@ -56,7 +56,7 @@ public class PassageController {
 
     @GetMapping("/select/prevlist")
     public ResponseEntity<?> selectPrevList(HttpSession session) {
-        try{
+        try {
             LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
 
             if (loginMember == null) {
@@ -136,10 +136,15 @@ public class PassageController {
     }
 
     // 지문 + 문항 수정
-    @PutMapping("/ques/update/{pasCode}")
-    public ResponseEntity<Long> updatePassage(
-            @PathVariable Long pasCode,
-            @RequestBody PassageWithQuestionsRequestDto requestDto) {
+//    @PutMapping("/ques/update/{pasCode}")
+//    public ResponseEntity<Long> updatePassage(
+//            @PathVariable Long pasCode,
+//            @RequestBody PassageWithQuestionsRequestDto requestDto) {
+//        PassageWithQuestionsResponseDto updatedPassage = passageService.updatePassage(pasCode, requestDto);
+//        return ResponseEntity.ok(updatedPassage);
+//
+//    }
+
     // 자료실 메인화면 리스트(즐겨찾기+최근 작업)
     @GetMapping("/select/list")
     public ResponseEntity<?> selectList(HttpSession session) {
@@ -184,9 +189,6 @@ public class PassageController {
 
         List<PassageStorageEachResponseDto> favorites = passageService.selectFavoriteList(loginMember.getMemberCode());
 
-        Long updatedPasCode = passageService.updatePassage(pasCode, requestDto);
-        return ResponseEntity.ok(updatedPasCode);
-    }
         return ResponseEntity.ok(favorites);
     }
 
