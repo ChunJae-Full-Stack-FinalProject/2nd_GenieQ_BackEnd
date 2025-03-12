@@ -1,10 +1,7 @@
 package com.cj.genieq.passage.controller;
 
 import com.cj.genieq.member.dto.response.LoginMemberResponseDto;
-import com.cj.genieq.passage.dto.request.PassageFavoriteRequestDto;
-import com.cj.genieq.passage.dto.request.PassageInsertRequestDto;
-import com.cj.genieq.passage.dto.request.PassageUpdateRequestDto;
-import com.cj.genieq.passage.dto.request.PassageWithQuestionsRequestDto;
+import com.cj.genieq.passage.dto.request.*;
 import com.cj.genieq.passage.dto.response.*;
 import com.cj.genieq.passage.service.PassageService;
 import jakarta.persistence.EntityNotFoundException;
@@ -194,4 +191,23 @@ public class PassageController {
         return ResponseEntity.ok(recents);
     }
 
+    // 지문 삭제
+    @PutMapping("/remove/each")
+    public ResponseEntity<?> removePassage(@RequestBody PassageDeleteRequestDto requestDto) {
+        if (requestDto.getPasCodeList() == null || requestDto.getPasCodeList().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("삭제할 대상이 없습니다.");
+        }
+
+        try {
+            boolean result = passageService.deletePassage(requestDto);
+            if (result) {
+                return ResponseEntity.ok("삭제 완료");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("삭제에 실패했습니다.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("서버에서 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
 }

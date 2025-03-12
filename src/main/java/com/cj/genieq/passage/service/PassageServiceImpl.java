@@ -2,10 +2,7 @@ package com.cj.genieq.passage.service;
 
 import com.cj.genieq.member.entity.MemberEntity;
 import com.cj.genieq.member.repository.MemberRepository;
-import com.cj.genieq.passage.dto.request.PassageFavoriteRequestDto;
-import com.cj.genieq.passage.dto.request.PassageInsertRequestDto;
-import com.cj.genieq.passage.dto.request.PassageUpdateRequestDto;
-import com.cj.genieq.passage.dto.request.PassageWithQuestionsRequestDto;
+import com.cj.genieq.passage.dto.request.*;
 import com.cj.genieq.passage.dto.response.*;
 import com.cj.genieq.passage.entity.PassageEntity;
 import com.cj.genieq.passage.repository.PassageRepository;
@@ -317,5 +314,22 @@ public class PassageServiceImpl implements PassageService {
                 .collect(Collectors.toList());
 
         return passages;
+    }
+
+    // 지문 삭제
+    @Transactional
+    @Override
+    public boolean deletePassage(PassageDeleteRequestDto requestDto) {
+        List<Long> pasCodeList = requestDto.getPasCodeList();
+
+        try {
+            int updatedCount = passageRepository.updateIsDeletedByPasCodeList(pasCodeList);
+            // 업데이트된 개수가 전달받은 리스트 크기와 같으면 성공
+            return updatedCount == pasCodeList.size();
+        } catch (Exception e) {
+            // 삭제 실패 시 로그 기록
+            System.err.println("삭제 실패: " + e.getMessage());
+            return false;
+        }
     }
 }
