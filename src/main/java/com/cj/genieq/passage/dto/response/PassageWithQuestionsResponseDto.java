@@ -1,5 +1,6 @@
 package com.cj.genieq.passage.dto.response;
 
+import com.cj.genieq.question.dto.request.QuestionInsertRequestDto;
 import com.cj.genieq.question.dto.response.QuestionSelectResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,5 +21,5 @@ public class PassageWithQuestionsResponseDto {
     private String content;
     private String gist;
 
-    private QuestionSelectResponseDto questions;
+    private List<QuestionSelectResponseDto> questions;
 }

@@ -1,14 +1,8 @@
 package com.cj.genieq.passage.controller;
 
 import com.cj.genieq.member.dto.response.LoginMemberResponseDto;
-import com.cj.genieq.passage.dto.request.PassageFavoriteRequestDto;
-import com.cj.genieq.passage.dto.request.PassageInsertRequestDto;
-import com.cj.genieq.passage.dto.request.PassageUpdateRequestDto;
-import com.cj.genieq.passage.dto.request.PassageWithQuestionsRequestDto;
-import com.cj.genieq.passage.dto.response.PassageFavoriteResponseDto;
-import com.cj.genieq.passage.dto.response.PassageSelectResponseDto;
-import com.cj.genieq.passage.dto.response.PassageWithQuestionsResponseDto;
-import com.cj.genieq.passage.dto.response.PassagePreviewListDto;
+import com.cj.genieq.passage.dto.request.*;
+import com.cj.genieq.passage.dto.response.*;
 import com.cj.genieq.passage.service.PassageService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
@@ -16,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.dao.DataAccessException;
 
 import java.util.List;
 
@@ -33,10 +28,10 @@ public class PassageController {
         if (loginMember == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
-        
+
         // 지문 생성
         PassageSelectResponseDto savedPassage = passageService.savePassage(loginMember.getMemberCode(), passageDto);
-                
+
         if (savedPassage != null) {
             return ResponseEntity.ok(savedPassage);
         } else {
@@ -58,7 +53,7 @@ public class PassageController {
 
     @GetMapping("/select/prevlist")
     public ResponseEntity<?> selectPrevList(HttpSession session) {
-        try{
+        try {
             LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
 
             if (loginMember == null) {
@@ -107,23 +102,14 @@ public class PassageController {
         }
     }
 
-//    @GetMapping("/select/list")
-//    public ResponseEntity<?> getPaginatedPassages(
-//            @RequestParam("memCode") Long memCode,
-//            @RequestParam("keyword") String keyword,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size) {
-//        List<PassageTitleListDto> passages= passageService.getPaginatedPassagesByTitle(memCode, keyword, page, size);
-//        return ResponseEntity.ok(passages);
-//
-//    }
-
     @PatchMapping("/favo")
     public ResponseEntity<PassageFavoriteResponseDto> favoritePassage(@RequestBody PassageFavoriteRequestDto requestDto) {
         PassageFavoriteResponseDto responseDto = passageService.favoritePassage(requestDto);
         return ResponseEntity.ok(responseDto);
     }
 
+
+    // 지문 + 문항 저장
     @PostMapping("/ques/insert/each")
     public ResponseEntity<?> savePassage(HttpSession session, @RequestBody PassageWithQuestionsRequestDto requestDto) {
         // 세션에서 로그인 사용자 정보를 가져옴
@@ -134,17 +120,129 @@ public class PassageController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
 
-        Long pasCode = passageService.savePassageWithQuestions(loginMember.getMemberCode(), requestDto);
-        return ResponseEntity.ok(pasCode);
-    }
+        PassageWithQuestionsResponseDto responseDto = passageService.savePassageWithQuestions(loginMember.getMemberCode(), requestDto);
 
-    // 지문 + 문항 조회
-    @GetMapping("/{pasCode}")
-    public ResponseEntity<PassageWithQuestionsRequestDto> getPassage(@PathVariable Long pasCode) {
-        PassageWithQuestionsRequestDto responseDto = passageService.getPassageWithQuestions(pasCode);
         return ResponseEntity.ok(responseDto);
     }
 
+    // 지문 + 문항 조회
+    @GetMapping("/ques/select/{pasCode}")
+    public ResponseEntity<PassageWithQuestionsResponseDto> getPassage(@PathVariable Long pasCode) {
+        PassageWithQuestionsResponseDto responseDto = passageService.getPassageWithQuestions(pasCode);
+        return ResponseEntity.ok(responseDto);
+    }
 
+    // 지문 + 문항 수정
+    @PutMapping("/ques/update/{pasCode}")
+    public ResponseEntity<PassageWithQuestionsResponseDto> updatePassage(
+            @PathVariable Long pasCode,
+            @RequestBody PassageWithQuestionsRequestDto requestDto) {
+        PassageWithQuestionsResponseDto updatedPassage = passageService.updatePassage(pasCode, requestDto);
+        return ResponseEntity.ok(updatedPassage);
 
+    }
+
+    // 자료실 메인화면 리스트(즐겨찾기+최근 작업)
+    @GetMapping("/select/list")
+    public ResponseEntity<?> selectList(HttpSession session) {
+        LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
+
+        // 로그인 상태 확인
+        if (loginMember == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        try {
+            List<PassageStorageEachResponseDto> favorites = passageService.selectPassageListInStorage(loginMember.getMemberCode(), 1, 5);
+            List<PassageStorageEachResponseDto> recent = passageService.selectPassageListInStorage(loginMember.getMemberCode(), 0, 8);
+
+            PassageStorageMainResponseDto responseDto = PassageStorageMainResponseDto.builder()
+                    .favorites(favorites)
+                    .recent(recent)
+                    .build();
+
+            return ResponseEntity.ok(responseDto);
+        } catch (IllegalArgumentException e) {
+            // 잘못된 파라미터 값 예외 처리
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 요청입니다: " + e.getMessage());
+        } catch (DataAccessException e) {
+            // DB 오류 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("데이터베이스 오류가 발생했습니다.");
+        } catch (Exception e) {
+            // 기타 예외 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버에서 문제가 발생했습니다.");
+        }
+    }
+
+    // 즐겨찾기 리스트
+    @GetMapping("/select/favolist")
+    public ResponseEntity<?> selectFavoList(HttpSession session) {
+        LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
+
+        // 로그인 상태 확인
+        if (loginMember == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        List<PassageStorageEachResponseDto> favorites = passageService.selectFavoriteList(loginMember.getMemberCode());
+
+        return ResponseEntity.ok(favorites);
+    }
+
+    // 최근 작업 내역 리스트
+    @GetMapping("/select/recelist")
+    public ResponseEntity<?> selectRecent(HttpSession session) {
+        LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
+
+        // 로그인 상태 확인
+        if (loginMember == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        List<PassageStorageEachResponseDto> recents = passageService.selectRecentList(loginMember.getMemberCode());
+
+        return ResponseEntity.ok(recents);
+    }
+
+    // 지문 삭제
+    @PutMapping("/remove/each")
+    public ResponseEntity<?> removePassage(@RequestBody PassageDeleteRequestDto requestDto) {
+        if (requestDto.getPasCodeList() == null || requestDto.getPasCodeList().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("삭제할 대상이 없습니다.");
+        }
+
+        try {
+            boolean result = passageService.deletePassage(requestDto);
+            if (result) {
+                return ResponseEntity.ok("삭제 완료");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("삭제에 실패했습니다.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("서버에서 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+    // 작업명(지문 이름) 변경
+    @PutMapping("/update/title")
+    public ResponseEntity<?> updatePassageTitle(@RequestBody PassageUpdateTitleRequestDto requestDto) {
+        if (requestDto.getPasCode() == null || requestDto.getTitle() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("필수 값이 없습니다.");
+        }
+
+        try {
+            boolean result = passageService.updatePassageTitle(requestDto);
+            if (result) {
+                return ResponseEntity.ok("지문 제목이 수정되었습니다.");
+            } else {
+                return ResponseEntity.status(HttpStatus.OK).body("기존 제목과 동일합니다.");
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("서버에서 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
 }
