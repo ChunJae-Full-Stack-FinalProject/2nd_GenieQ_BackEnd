@@ -238,23 +238,10 @@ public class PassageController {
         }
     }
 
-//    @GetMapping("/export/each")
-//    public ResponseEntity<byte[]> generatePdf(@RequestParam String content) {
-//
-//
-//        byte[] pdfData = pdfService.createPdf(content);
-//
-//        // PDF 다운로드 설정
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.add("Content-Disposition", "attachment; filename=document.pdf");
-//        headers.add("Content-Type", "application/pdf");
-//
-//        return new ResponseEntity<>(pdfData, headers, HttpStatus.OK);
-//    }
-
-    @PostMapping("/export/each")
-    public ResponseEntity<byte[]> generatePdf(@RequestBody String jsonData) {
-        byte[] pdfData = pdfService.createPdfFromJson(jsonData);
+    @GetMapping("/export/{pasCode}")
+    public ResponseEntity<byte[]> generatePdf(@PathVariable("pasCode") Long pasCode) {
+        PassageWithQuestionsRequestDto responseDto = passageService.getPassageWithQuestions(pasCode);
+        byte[] pdfData = pdfService.createPdfFromDto(responseDto);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=document.pdf");
