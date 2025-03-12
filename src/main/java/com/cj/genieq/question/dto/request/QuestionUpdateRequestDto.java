@@ -11,9 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
-//문항 저장에 사용
-public class QuestionInsertRequestDto {
+public class QuestionUpdateRequestDto {
     private Long queCode;
     private String queQuery; //질문
     private List<String> queOption; //보기

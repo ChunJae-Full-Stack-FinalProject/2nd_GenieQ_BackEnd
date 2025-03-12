@@ -28,10 +28,10 @@ public class PassageController {
         if (loginMember == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
-        
+
         // 지문 생성
         PassageSelectResponseDto savedPassage = passageService.savePassage(loginMember.getMemberCode(), passageDto);
-                
+
         if (savedPassage != null) {
             return ResponseEntity.ok(savedPassage);
         } else {
@@ -53,7 +53,7 @@ public class PassageController {
 
     @GetMapping("/select/prevlist")
     public ResponseEntity<?> selectPrevList(HttpSession session) {
-        try{
+        try {
             LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
 
             if (loginMember == null) {
@@ -108,6 +108,8 @@ public class PassageController {
         return ResponseEntity.ok(responseDto);
     }
 
+
+    // 지문 + 문항 저장
     @PostMapping("/ques/insert/each")
     public ResponseEntity<?> savePassage(HttpSession session, @RequestBody PassageWithQuestionsRequestDto requestDto) {
         // 세션에서 로그인 사용자 정보를 가져옴
@@ -118,15 +120,26 @@ public class PassageController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
 
-        Long pasCode = passageService.savePassageWithQuestions(loginMember.getMemberCode(), requestDto);
-        return ResponseEntity.ok(pasCode);
+        PassageWithQuestionsResponseDto responseDto = passageService.savePassageWithQuestions(loginMember.getMemberCode(), requestDto);
+
+        return ResponseEntity.ok(responseDto);
     }
 
     // 지문 + 문항 조회
-    @GetMapping("/{pasCode}")
-    public ResponseEntity<PassageWithQuestionsRequestDto> getPassage(@PathVariable Long pasCode) {
-        PassageWithQuestionsRequestDto responseDto = passageService.getPassageWithQuestions(pasCode);
+    @GetMapping("/ques/select/{pasCode}")
+    public ResponseEntity<PassageWithQuestionsResponseDto> getPassage(@PathVariable Long pasCode) {
+        PassageWithQuestionsResponseDto responseDto = passageService.getPassageWithQuestions(pasCode);
         return ResponseEntity.ok(responseDto);
+    }
+
+    // 지문 + 문항 수정
+    @PutMapping("/ques/update/{pasCode}")
+    public ResponseEntity<PassageWithQuestionsResponseDto> updatePassage(
+            @PathVariable Long pasCode,
+            @RequestBody PassageWithQuestionsRequestDto requestDto) {
+        PassageWithQuestionsResponseDto updatedPassage = passageService.updatePassage(pasCode, requestDto);
+        return ResponseEntity.ok(updatedPassage);
+
     }
 
     // 자료실 메인화면 리스트(즐겨찾기+최근 작업)
