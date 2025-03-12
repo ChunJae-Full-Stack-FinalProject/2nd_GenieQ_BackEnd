@@ -132,6 +132,7 @@ public class PassageController {
         return ResponseEntity.ok(responseDto);
     }
 
+    // 자료실 메인화면 리스트(즐겨찾기+최근 작업)
     @GetMapping("/select/list")
     public ResponseEntity<?> selectList(HttpSession session) {
         LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
@@ -163,6 +164,7 @@ public class PassageController {
         }
     }
 
+    // 즐겨찾기 리스트
     @GetMapping("/select/favolist")
     public ResponseEntity<?> selectFavoList(HttpSession session) {
         LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
@@ -175,6 +177,21 @@ public class PassageController {
         List<PassageStorageEachResponseDto> favorites = passageService.selectFavoriteList(loginMember.getMemberCode());
 
         return ResponseEntity.ok(favorites);
+    }
+
+    // 최근 작업 내역 리스트
+    @GetMapping("/select/recelist")
+    public ResponseEntity<?> selectRecent(HttpSession session) {
+        LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
+
+        // 로그인 상태 확인
+        if (loginMember == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        List<PassageStorageEachResponseDto> recents = passageService.selectRecentList(loginMember.getMemberCode());
+
+        return ResponseEntity.ok(recents);
     }
 
 }

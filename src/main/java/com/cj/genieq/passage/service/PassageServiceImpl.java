@@ -249,6 +249,7 @@ public class PassageServiceImpl implements PassageService {
                 .build();
     }
 
+    // 자료실 메인화면 리스트(즐겨찾기+최근 작업)
     @Override
     public List<PassageStorageEachResponseDto> selectPassageListInStorage(Long memCode, Integer isFavorite, Integer rownum) {
         List<PassageEntity> passageEntities = passageRepository.selectPassageListInStorage(memCode, isFavorite, rownum);
@@ -271,6 +272,7 @@ public class PassageServiceImpl implements PassageService {
         return passages;
     }
 
+    // 즐겨찾기 리스트
     @Override
     public List<PassageStorageEachResponseDto> selectFavoriteList(Long memCode) {
         List<PassageEntity> passageEntities = passageRepository.selectTop150FavoritePassages(memCode);
@@ -281,6 +283,31 @@ public class PassageServiceImpl implements PassageService {
         }
 
         List<PassageStorageEachResponseDto> passages = passageEntities.stream()
+                .filter(p -> p.getIsDeleted() == 0) // isDeleted = 0 필터링
+                .map(p -> PassageStorageEachResponseDto.builder()
+                        .title(p.getTitle())
+                        .keyword(p.getKeyword())
+                        .isGenerated(p.getIsGenerated())
+                        .date(p.getDate().toLocalDate())
+                        .isFavorite(p.getIsFavorite())
+                        .build())
+                .collect(Collectors.toList());
+
+        return passages;
+    }
+
+    // 최근 작업 내역 리스트
+    @Override
+    public List<PassageStorageEachResponseDto> selectRecentList(Long memCode) {
+        List<PassageEntity> passageEntities = passageRepository.selectTop150RecentPassages(memCode);
+
+        // 조회 결과가 없으면 빈 리스트 반환
+        if (passageEntities == null || passageEntities.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<PassageStorageEachResponseDto> passages = passageEntities.stream()
+                .filter(p -> p.getIsDeleted() == 0) // isDeleted = 0 필터링
                 .map(p -> PassageStorageEachResponseDto.builder()
                         .title(p.getTitle())
                         .keyword(p.getKeyword())

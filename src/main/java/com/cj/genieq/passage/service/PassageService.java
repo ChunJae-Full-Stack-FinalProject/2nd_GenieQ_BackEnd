@@ -20,4 +20,5 @@ public interface PassageService {
     PassageWithQuestionsRequestDto getPassageWithQuestions(Long pasCode);
     List<PassageStorageEachResponseDto> selectPassageListInStorage(Long memCode, Integer isFavorite, Integer rownum);
     List<PassageStorageEachResponseDto> selectFavoriteList(Long memCode);
+    List<PassageStorageEachResponseDto> selectRecentList(Long memCode);
 }

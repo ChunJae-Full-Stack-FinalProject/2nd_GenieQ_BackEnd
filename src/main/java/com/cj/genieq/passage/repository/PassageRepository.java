@@ -62,6 +62,16 @@ public interface PassageRepository extends JpaRepository<PassageEntity,Long> {
             @Param("memCode") Long memCode
     );
 
+    // 최근 작업 150개 리스트
+    @Query(value = "SELECT * FROM ( " +
+            "    SELECT p.* FROM PASSAGE p " +
+            "    WHERE p.MEM_CODE = :memCode " +
+            "    ORDER BY p.PAS_DATE DESC " +
+            ") WHERE ROWNUM <= 150", nativeQuery = true)
+    List<PassageEntity> selectTop150RecentPassages(
+            @Param("memCode") Long memCode
+    );
+
 
 
 }
