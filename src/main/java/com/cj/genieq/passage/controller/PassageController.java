@@ -5,6 +5,7 @@ import com.cj.genieq.passage.dto.request.*;
 import com.cj.genieq.passage.dto.response.*;
 import com.cj.genieq.passage.service.PassageService;
 import com.cj.genieq.passage.service.PdfService;
+import com.cj.genieq.passage.service.WordService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class PassageController {
 
     private final PassageService passageService;
     private final PdfService pdfService;
+    private final WordService wordService;
 
     @PostMapping("/insert/each")
     public ResponseEntity<?> insertEach(HttpSession session, @RequestBody PassageInsertRequestDto passageDto) {
@@ -259,5 +261,19 @@ public class PassageController {
         headers.add("Content-Type", "application/pdf");
 
         return new ResponseEntity<>(pdfData, headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/generate/{pasCode}")
+    public ResponseEntity<byte[]> generateWord(@PathVariable("pasCode") Long pasCode) {
+        PassageWithQuestionsRequestDto responseDto = passageService.getPassageWithQuestions(pasCode);
+        byte[] wordData = wordService.createWordFromDto(responseDto);
+
+        HttpHeaders headers = new HttpHeaders();
+        // ✅ 파일 이름 명확히 설정
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"document.docx\"");
+        // ✅ 응답 타입 명확히 설정 (바이너리 인식)
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+
+        return new ResponseEntity<>(wordData, headers, HttpStatus.OK);
     }
 }
