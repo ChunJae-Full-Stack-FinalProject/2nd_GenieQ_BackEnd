@@ -6,30 +6,20 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<PaymentEntity, Long> {
 
-    @Query(value = """
-        SELECT * FROM (
-            SELECT p.*, ROWNUM AS rn
-            FROM (
-                SELECT p.*
-                FROM PAYMENT p
-                WHERE p.mem_code = :memCode
-                AND TRUNC(p.pay_date) BETWEEN TRUNC(:startDate) AND TRUNC(:endDate)
-                ORDER BY p.pay_code DESC
-            ) p
-            WHERE ROWNUM <= :endRow
-        )
-        WHERE rn > :startRow
-        """, nativeQuery = true)
+    @Query("""
+    SELECT p FROM PaymentEntity p
+    WHERE p.member.memCode = :memCode
+    AND p.date >= :startDate AND p.date < :endDate
+    ORDER BY p.date DESC
+    """)
     List<PaymentEntity> findByMemCodeAndDateRange(
             @Param("memCode") Long memCode,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate,
-            @Param("startRow") int startRow,
-            @Param("endRow") int endRow);
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
 }

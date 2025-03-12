@@ -19,11 +19,8 @@ public class NoticeController {
     private final NoticeService noticeService;
 
     @GetMapping("/select/list")
-    public ResponseEntity<?> select(
-            @RequestParam(defaultValue = "전체") String type,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        List<NoticeListResponseDto> notices = noticeService.getNoticeList(type, page, size);
+    public ResponseEntity<?> select() {
+        List<NoticeListResponseDto> notices = noticeService.getNoticeList();
 
         return ResponseEntity.ok().body(notices);
     }

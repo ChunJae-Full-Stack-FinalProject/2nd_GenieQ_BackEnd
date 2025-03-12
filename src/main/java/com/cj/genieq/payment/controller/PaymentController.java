@@ -47,7 +47,7 @@ public class PaymentController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
 
-        List<PaymentListResponseDto> payments = paymentService.getPaymentList(loginMember.getMemberCode(), startDate, endDate, page, size);
+        List<PaymentListResponseDto> payments = paymentService.getPaymentList(loginMember.getMemberCode(), startDate, endDate);
         return ResponseEntity.ok(payments);
     }
 }
