@@ -134,7 +134,6 @@ public class PassageController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
 
-
         Long pasCode = passageService.savePassageWithQuestions(loginMember.getMemberCode(), requestDto);
         return ResponseEntity.ok(pasCode);
     }
