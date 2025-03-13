@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 보호 기능 비활성화 (REST API에서는 일반적으로 비활성화)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 적용
                 .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 // 요청에 대한 권한 설정
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/configuration/**").permitAll() // Swagger 허용
@@ -47,16 +47,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/usag/**").permitAll() // 이용내역
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
                 )
-//                .logout(logout -> logout
-//                        .logoutUrl("/api/auth/select/logout") // 로그아웃 URL 지정
-//                        .invalidateHttpSession(true) // 세션 무효화
-//                        .deleteCookies("JSESSIONID") // JSESSIONID 쿠키 삭제
-//                        .logoutSuccessHandler((request, response, authentication) -> {
-//                            response.setCharacterEncoding("UTF-8");
-//                            response.setStatus(HttpServletResponse.SC_OK);
-//                            response.getWriter().write("로그아웃 성공 및 쿠키 삭제 완료");
-//                        })
-//                )
                 .build();
 
     }
@@ -79,6 +69,4 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
-
 }
