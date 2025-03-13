@@ -22,13 +22,13 @@ public class UsageServiceImpl implements UsageService{
     private final MemberRepository memberRepository;
 
     public List<UsageListResponseDto> getUsageList(
-            Long memCode, LocalDate startDate, LocalDate endDate, int page, int size) {
+            Long memCode, LocalDate startDate, LocalDate endDate) {
 
-        int startRow = page * size;
-        int endRow = startRow + size;
+        LocalDateTime startOfDay = startDate.atStartOfDay();
+        LocalDateTime endOfDay = endDate.atTime(23, 59, 59, 999999999);
 
         List<UsageEntity> usageEntities = usageRepository.findByMemCodeAndDateRange(
-                memCode, startDate, endDate, startRow, endRow);
+                memCode, startOfDay, endOfDay);
 
         return usageEntities.stream()
                 .map(usage -> UsageListResponseDto.builder()

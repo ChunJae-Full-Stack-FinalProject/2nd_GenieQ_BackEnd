@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -25,6 +26,7 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         return http
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 보호 기능 비활성화 (REST API에서는 일반적으로 비활성화)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 적용
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 요청에 대한 권한 설정
@@ -45,16 +47,16 @@ public class SecurityConfig {
                         .requestMatchers("/api/usag/**").permitAll() // 이용내역
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
                 )
-                .logout(logout -> logout
-                        .logoutUrl("/api/auth/select/logout") // 로그아웃 URL 지정
-                        .invalidateHttpSession(true) // 세션 무효화
-                        .deleteCookies("JSESSIONID") // JSESSIONID 쿠키 삭제
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            response.setCharacterEncoding("UTF-8");
-                            response.setStatus(HttpServletResponse.SC_OK);
-                            response.getWriter().write("로그아웃 성공 및 쿠키 삭제 완료");
-                        })
-                )
+//                .logout(logout -> logout
+//                        .logoutUrl("/api/auth/select/logout") // 로그아웃 URL 지정
+//                        .invalidateHttpSession(true) // 세션 무효화
+//                        .deleteCookies("JSESSIONID") // JSESSIONID 쿠키 삭제
+//                        .logoutSuccessHandler((request, response, authentication) -> {
+//                            response.setCharacterEncoding("UTF-8");
+//                            response.setStatus(HttpServletResponse.SC_OK);
+//                            response.getWriter().write("로그아웃 성공 및 쿠키 삭제 완료");
+//                        })
+//                )
                 .build();
 
     }
@@ -67,9 +69,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(true); // 자격 증명 허용 (세션, 쿠키 등)
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://127.0.0.1:5173", "http://43.202.6.90"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 메서드 설정
         configuration.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
-        configuration.setAllowCredentials(true); // 자격 증명 허용 (세션, 쿠키 등)
+
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

@@ -55,12 +55,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     // 결제 전체 조회
     @Override
-    public List<PaymentListResponseDto> getPaymentList(Long memCode, LocalDate startDate, LocalDate endDate, int page, int size) {
-        int startRow = page * size;
-        int endRow = startRow + size;
+    public List<PaymentListResponseDto> getPaymentList(Long memCode, LocalDate startDate, LocalDate endDate) {
 
-        List<PaymentEntity> paymentEntities = paymentRepository.findByMemCodeAndDateRange(
-                memCode, startDate, endDate, startRow, endRow);
+        LocalDateTime startOfDay = startDate.atStartOfDay();
+        LocalDateTime endOfDay = endDate.atTime(23, 59, 59, 999999999);
+
+        List<PaymentEntity> paymentEntities = paymentRepository.findByMemCodeAndDateRange(memCode, startOfDay, endOfDay);
 
         return paymentEntities.stream()
                 .map(payment -> {

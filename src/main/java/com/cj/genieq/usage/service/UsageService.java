@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface UsageService {
     List<UsageListResponseDto> getUsageList(
-            Long memCode, LocalDate startDate, LocalDate endDate, int page, int size);
+            Long memCode, LocalDate startDate, LocalDate endDate);
 
     void updateUsage(Long memCode, int count, String type);
 }
