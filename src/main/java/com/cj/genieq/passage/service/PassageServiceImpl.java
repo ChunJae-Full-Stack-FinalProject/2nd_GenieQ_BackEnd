@@ -133,6 +133,7 @@ public class PassageServiceImpl implements PassageService {
                             .passageTitle(passage.getTitle())   // 지문 제목
                             .subjectKeyword(passage.getKeyword()) // 지문 키워드
                             .date(date) // 날짜 처리
+                            .content(passage.getContent())
                             .favorite(passage.getIsFavorite()) // 즐겨찾기 상태
                             .build();
                 })
