@@ -4,14 +4,20 @@ import com.cj.genieq.member.dto.response.LoginMemberResponseDto;
 import com.cj.genieq.passage.dto.request.*;
 import com.cj.genieq.passage.dto.response.*;
 import com.cj.genieq.passage.service.PassageService;
+import com.cj.genieq.passage.service.PdfService;
+import com.cj.genieq.passage.service.TxtService;
+import com.cj.genieq.passage.service.WordService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.dao.DataAccessException;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -20,6 +26,9 @@ import java.util.List;
 public class PassageController {
 
     private final PassageService passageService;
+    private final PdfService pdfService;
+    private final WordService wordService;
+    private final TxtService txtService;
 
     @PostMapping("/insert/each")
     public ResponseEntity<?> insertEach(HttpSession session, @RequestBody PassageInsertRequestDto passageDto) {
@@ -244,5 +253,67 @@ public class PassageController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("서버에서 오류가 발생했습니다: " + e.getMessage());
         }
+    }
+
+    // 파일 추출 (type: pdf/word/txt)
+    @GetMapping("/export/each/{pasCode}")
+    public ResponseEntity<byte[]> generatePdf(@PathVariable("pasCode") Long pasCode, @RequestParam("type") String type) {
+        PassageWithQuestionsResponseDto responseDto = passageService.getPassageWithQuestions(pasCode);
+
+        String fileName = createSafeFileName(responseDto.getTitle());
+        byte[] result = generateFile(responseDto, type);
+
+        HttpHeaders headers = createHeaders(fileName, type);
+
+        return new ResponseEntity<>(result, headers, HttpStatus.OK);
+    }
+    
+    // 파일 이름 생성
+    private String createSafeFileName(String title) {
+        return title.replaceAll("[^a-zA-Z0-9가-힣_]", "") // 특수문자 제거
+                .replaceAll(" ", "_"); // 공백은 언더바로 변환
+    }
+    
+    // 파일 생성
+    private byte[] generateFile(PassageWithQuestionsResponseDto dto, String type) {
+        return switch (type.toLowerCase()) {
+            case "pdf" -> pdfService.createPdfFromDto(dto);
+            case "word" -> wordService.createWordFromDto(dto);
+            case "txt" -> txtService.createTxtFromDto(dto);
+            default -> throw new IllegalArgumentException("Unsupported file type: " + type);
+        };
+    }
+
+    // 파일 추출을 위한 httpheader 생성
+    private HttpHeaders createHeaders(String fileName, String type) {
+        HttpHeaders headers = new HttpHeaders();
+
+        String extension;
+        String contentType;
+
+        switch (type.toLowerCase()) {
+            case "pdf" -> {
+                extension = "pdf";
+                contentType = "application/pdf";
+            }
+            case "word" -> {
+                extension = "docx";
+                contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            }
+            case "txt" -> {
+                extension = "txt";
+                contentType = "text/plain; charset=UTF-8";
+            }
+            default -> throw new IllegalArgumentException("Unsupported file type: " + type);
+        }
+
+        // ✅ 파일 이름을 UTF-8로 URL 인코딩
+        String encodedFileName = URLEncoder.encode(fileName + "." + extension, StandardCharsets.UTF_8)
+                .replaceAll("\\+", "%20"); // 공백을 `%20`으로 변환
+
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"");
+        headers.add(HttpHeaders.CONTENT_TYPE, contentType);
+
+        return headers;
     }
 }
