@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.dao.DataAccessException;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -253,44 +255,65 @@ public class PassageController {
         }
     }
 
-    @GetMapping("/export/{pasCode}")
-    public ResponseEntity<byte[]> generatePdf(@PathVariable("pasCode") Long pasCode) {
-        PassageWithQuestionsRequestDto responseDto = passageService.getPassageWithQuestions(pasCode);
-        byte[] pdfData = pdfService.createPdfFromDto(responseDto);
+    // 파일 추출 (type: pdf/word/txt)
+    @GetMapping("/export/each/{pasCode}")
+    public ResponseEntity<byte[]> generatePdf(@PathVariable("pasCode") Long pasCode, @RequestParam("type") String type) {
+        PassageWithQuestionsResponseDto responseDto = passageService.getPassageWithQuestions(pasCode);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=document.pdf");
-        headers.add("Content-Type", "application/pdf");
+        String fileName = createSafeFileName(responseDto.getTitle());
+        byte[] result = generateFile(responseDto, type);
 
-        return new ResponseEntity<>(pdfData, headers, HttpStatus.OK);
+        HttpHeaders headers = createHeaders(fileName, type);
+
+        return new ResponseEntity<>(result, headers, HttpStatus.OK);
+    }
+    
+    // 파일 이름 생성
+    private String createSafeFileName(String title) {
+        return title.replaceAll("[^a-zA-Z0-9가-힣_]", "") // 특수문자 제거
+                .replaceAll(" ", "_"); // 공백은 언더바로 변환
+    }
+    
+    // 파일 생성
+    private byte[] generateFile(PassageWithQuestionsResponseDto dto, String type) {
+        return switch (type.toLowerCase()) {
+            case "pdf" -> pdfService.createPdfFromDto(dto);
+            case "word" -> wordService.createWordFromDto(dto);
+            case "txt" -> txtService.createTxtFromDto(dto);
+            default -> throw new IllegalArgumentException("Unsupported file type: " + type);
+        };
     }
 
-    @GetMapping("/generate/{pasCode}")
-    public ResponseEntity<byte[]> generateWord(@PathVariable("pasCode") Long pasCode) {
-        PassageWithQuestionsRequestDto responseDto = passageService.getPassageWithQuestions(pasCode);
-        byte[] wordData = wordService.createWordFromDto(responseDto);
-
+    // 파일 추출을 위한 httpheader 생성
+    private HttpHeaders createHeaders(String fileName, String type) {
         HttpHeaders headers = new HttpHeaders();
-        // ✅ 파일 이름 명확히 설정
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"document.docx\"");
-        // ✅ 응답 타입 명확히 설정 (바이너리 인식)
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 
-        return new ResponseEntity<>(wordData, headers, HttpStatus.OK);
+        String extension;
+        String contentType;
+
+        switch (type.toLowerCase()) {
+            case "pdf" -> {
+                extension = "pdf";
+                contentType = "application/pdf";
+            }
+            case "word" -> {
+                extension = "docx";
+                contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            }
+            case "txt" -> {
+                extension = "txt";
+                contentType = "text/plain; charset=UTF-8";
+            }
+            default -> throw new IllegalArgumentException("Unsupported file type: " + type);
+        }
+
+        // ✅ 파일 이름을 UTF-8로 URL 인코딩
+        String encodedFileName = URLEncoder.encode(fileName + "." + extension, StandardCharsets.UTF_8)
+                .replaceAll("\\+", "%20"); // 공백을 `%20`으로 변환
+
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"");
+        headers.add(HttpHeaders.CONTENT_TYPE, contentType);
+
+        return headers;
     }
-
-    @GetMapping("/generatetxt/{pasCode}")
-    public ResponseEntity<byte[]> generateTxt(@PathVariable("pasCode") Long pasCode) {
-        PassageWithQuestionsRequestDto responseDto = passageService.getPassageWithQuestions(pasCode);
-        byte[] txtData = txtService.createTxtFromDto(responseDto);
-
-        HttpHeaders headers = new HttpHeaders();
-        // ✅ 파일 이름 설정
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"document.txt\"");
-        // ✅ 응답 타입 설정
-        headers.add(HttpHeaders.CONTENT_TYPE, "text/plain; charset=UTF-8");
-
-        return new ResponseEntity<>(txtData, headers, HttpStatus.OK);
-    }
-
 }

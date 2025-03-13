@@ -1,7 +1,7 @@
 package com.cj.genieq.passage.service;
 
-import com.cj.genieq.passage.dto.request.PassageWithQuestionsRequestDto;
-import com.cj.genieq.question.dto.request.QuestionInsertRequestDto;
+import com.cj.genieq.passage.dto.response.PassageWithQuestionsResponseDto;
+import com.cj.genieq.question.dto.response.QuestionSelectResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class TxtService {
 
-    public byte[] createTxtFromDto(PassageWithQuestionsRequestDto dto) {
+    public byte[] createTxtFromDto(PassageWithQuestionsResponseDto dto) {
         StringBuilder sb = new StringBuilder();
 
         // ✅ 제목 작성
@@ -29,7 +29,7 @@ public class TxtService {
         // ✅ 문제 작성
         if (dto.getQuestions() != null && !dto.getQuestions().isEmpty()) {
             sb.append("[문제]").append("\n");
-            for (QuestionInsertRequestDto question : dto.getQuestions()) {
+            for (QuestionSelectResponseDto question : dto.getQuestions()) {
                 sb.append("Q: ").append(question.getQueQuery()).append("\n");
                 for (String option : question.getQueOption()) {
                     sb.append(" - ").append(option).append("\n");

@@ -1,9 +1,7 @@
 package com.cj.genieq.passage.service;
 
-import com.cj.genieq.passage.dto.request.PassageWithQuestionsRequestDto;
-import com.cj.genieq.question.dto.request.QuestionInsertRequestDto;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.cj.genieq.passage.dto.response.PassageWithQuestionsResponseDto;
+import com.cj.genieq.question.dto.response.QuestionSelectResponseDto;
 import com.itextpdf.io.font.FontProgramFactory;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
@@ -21,12 +19,11 @@ import java.io.ByteArrayOutputStream;
 @Service
 public class PdfService {
 
-
     // ✅ 폰트 경로 설정
     private static final String FONT_PATH = "src/main/resources/fonts/NanumGothic.ttf";
 
 
-    public byte[] createPdfFromDto(PassageWithQuestionsRequestDto dto) {
+    public byte[] createPdfFromDto(PassageWithQuestionsResponseDto dto) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             PdfWriter writer = new PdfWriter(baos);
             PdfDocument pdfDocument = new PdfDocument(writer);
@@ -56,7 +53,7 @@ public class PdfService {
             if (dto.getQuestions() != null && !dto.getQuestions().isEmpty()) {
                 document.add(new Paragraph(new Text("\n[문제]")));
 
-                for (QuestionInsertRequestDto question : dto.getQuestions()) {
+                for (QuestionSelectResponseDto question : dto.getQuestions()) {
                     // ✅ 문제 출력 (Bold)
                     Text questionText = new Text("\nQ: " + question.getQueQuery());
                     document.add(new Paragraph(questionText));

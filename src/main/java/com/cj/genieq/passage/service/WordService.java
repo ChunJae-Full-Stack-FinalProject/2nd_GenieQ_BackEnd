@@ -1,7 +1,7 @@
 package com.cj.genieq.passage.service;
 
-import com.cj.genieq.passage.dto.request.PassageWithQuestionsRequestDto;
-import com.cj.genieq.question.dto.request.QuestionInsertRequestDto;
+import com.cj.genieq.passage.dto.response.PassageWithQuestionsResponseDto;
+import com.cj.genieq.question.dto.response.QuestionSelectResponseDto;
 import org.apache.poi.xwpf.usermodel.*;
 
 import org.springframework.stereotype.Service;
@@ -11,7 +11,7 @@ import java.io.ByteArrayOutputStream;
 @Service
 public class WordService {
 
-    public byte[] createWordFromDto(PassageWithQuestionsRequestDto dto) {
+    public byte[] createWordFromDto(PassageWithQuestionsResponseDto dto) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             // ✅ Word 문서 생성
             XWPFDocument document = new XWPFDocument();
@@ -67,7 +67,7 @@ public class WordService {
                 questionTitleRun.setBold(true);
                 questionTitleRun.setFontSize(12);
 
-                for (QuestionInsertRequestDto question : dto.getQuestions()) {
+                for (QuestionSelectResponseDto question : dto.getQuestions()) {
                     // ✅ 문제 출력 (Bold)
                     XWPFParagraph questionParagraph = document.createParagraph();
                     XWPFRun questionRun = questionParagraph.createRun();
