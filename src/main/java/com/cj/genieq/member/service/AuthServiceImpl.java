@@ -60,6 +60,10 @@ public class AuthServiceImpl implements AuthService {
         //이메일로 사용자 조회
         MemberEntity member = memberRepository.findByMemEmail(memEmail)
                 .orElseThrow(()-> new IllegalArgumentException("이메일이 존재하지 않습니다."));
+        //회원탈퇴 검증
+        if(member.getMemIsDeleted()==1 ) {
+            throw new IllegalArgumentException("탈퇴한 회원입니다.");
+        }
 
         //비밀번호 검증
         if(!passwordEncoder.matches(memPassword, member.getMemPassword())){
@@ -81,12 +85,13 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void withdraw(String memEmail,  HttpSession session){
         //이메일로 사용자 조회
+        System.out.println("start");
         MemberEntity member = memberRepository.findByMemEmail(memEmail)
                 .orElseThrow(()-> new IllegalArgumentException("회원이 존재하지 않습니다."));
-
+        System.out.println("mid");
         member.setMemIsDeleted(1);
         memberRepository.save(member);
-
+        System.out.println("end");
         session.invalidate(); //세션 만료 처리
     }
 

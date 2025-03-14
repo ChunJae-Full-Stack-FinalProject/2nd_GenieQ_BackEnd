@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController //컨트롤러에서 반환된 값이 JSON 형태로 응답됨
 @RequestMapping("/api")
 @RequiredArgsConstructor //자동 생성자 주입
-
 public class MemberController {
 
     private final AuthService authService;
@@ -121,12 +120,14 @@ public class MemberController {
             @RequestBody UpdatePasswordRequestDto updatePasswordRequestDto,
             HttpSession session
             ){
+        System.out.println("start");
         infoService.updatePassword(
                 updatePasswordRequestDto.getCurrentPassword(),
                 updatePasswordRequestDto.getNewPassword(),
                 updatePasswordRequestDto.getConfirmPassword(),
                 session
         );
+        System.out.println("end");
         return ResponseEntity.ok("비밀번호 수정 완료");
     }
 
