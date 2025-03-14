@@ -6,7 +6,6 @@ import com.cj.genieq.passage.dto.request.*;
 import com.cj.genieq.passage.dto.response.*;
 import com.cj.genieq.passage.entity.PassageEntity;
 import com.cj.genieq.passage.repository.PassageRepository;
-import com.cj.genieq.question.dto.request.QuestionInsertRequestDto;
 import com.cj.genieq.question.dto.request.QuestionUpdateRequestDto;
 import com.cj.genieq.question.dto.response.QuestionSelectResponseDto;
 import com.cj.genieq.question.service.QuestionService;
@@ -19,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -133,6 +133,7 @@ public class PassageServiceImpl implements PassageService {
                             .passageTitle(passage.getTitle())   // 지문 제목
                             .subjectKeyword(passage.getKeyword()) // 지문 키워드
                             .date(date) // 날짜 처리
+                            .content(passage.getContent())
                             .favorite(passage.getIsFavorite()) // 즐겨찾기 상태
                             .build();
                 })
@@ -245,14 +246,16 @@ public class PassageServiceImpl implements PassageService {
 
         // 2. 엔티티 → DTO 변환
         // 지문+문항 조회하는 작업은 지문엔티티에 의존하므로 지문 서비스의 책임에 해당해서 문항 서비스에 메서드를 추가하지 않은 것이다.
-        List<QuestionSelectResponseDto> questions = passage.getQuestions().stream()
+        List<QuestionSelectResponseDto> questions = (passage.getQuestions() != null)
+                ? passage.getQuestions().stream()
                 .map(q -> QuestionSelectResponseDto.builder()
                         .queCode(q.getQueCode())
                         .queQuery(q.getQueQuery())
-                        .queOption(List.of(q.getQueOption().split(","))) // String → JSON 변환
+                        .queOption(q.getQueOption() != null ? List.of(q.getQueOption().split(",")) : new ArrayList<>()) // String → JSON 변환
                         .queAnswer(q.getQueAnswer())
                         .build())
-                .collect(Collectors.toList());
+                .collect(Collectors.toList())
+                : new ArrayList<>();
 
         // 3. 응답 DTO 생성 후 반환 값 변수에 저장
         PassageWithQuestionsResponseDto result = PassageWithQuestionsResponseDto.builder()
@@ -262,7 +265,7 @@ public class PassageServiceImpl implements PassageService {
                 .title(passage.getTitle())
                 .content(passage.getContent())
                 .gist(passage.getGist())
-                .questions(questions)
+                .questions(questions) // 문항이 없을 경우 빈 리스트 반환
                 .build();
 
         // 4. 변수 반환
