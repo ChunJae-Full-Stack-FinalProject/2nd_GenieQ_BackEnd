@@ -213,6 +213,20 @@ public class PassageController {
         return ResponseEntity.ok(recents);
     }
 
+    @GetMapping("/select/count/recent")
+    public ResponseEntity<?> countRecentChange(HttpSession session){
+        LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
+
+        // 로그인 상태 확인
+        if (loginMember == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        int numberOfRecentChange = passageService.countRecentChange(loginMember.getMemberCode());
+
+        return ResponseEntity.ok(numberOfRecentChange);
+    }
+
     // 지문 삭제
     @PutMapping("/remove/each")
     public ResponseEntity<?> removePassage(@RequestBody PassageDeleteRequestDto requestDto) {

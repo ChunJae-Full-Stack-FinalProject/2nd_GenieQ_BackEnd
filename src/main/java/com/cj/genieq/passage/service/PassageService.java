@@ -28,6 +28,7 @@ public interface PassageService {
     List<PassageStorageEachResponseDto> selectPassageListInStorage(Long memCode, Integer isFavorite, Integer rownum);
     List<PassageStorageEachResponseDto> selectFavoriteList(Long memCode);
     List<PassageStorageEachResponseDto> selectRecentList(Long memCode);
+    int countRecentChange(Long memCode);
     boolean deletePassage(PassageDeleteRequestDto requestDto);
     boolean updatePassageTitle(PassageUpdateTitleRequestDto requestDto);
 }

@@ -399,6 +399,14 @@ public class PassageServiceImpl implements PassageService {
         return passages;
     }
 
+    @Override
+    public int countRecentChange(Long memCode) {
+
+        int countRecentChange = passageRepository.countByMemberAndIsDeleted(memCode, 0);
+
+        return countRecentChange;
+    }
+
     // 지문 삭제
     @Transactional
     @Override

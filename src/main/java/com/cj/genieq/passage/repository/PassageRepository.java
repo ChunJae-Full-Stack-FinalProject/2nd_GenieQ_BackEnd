@@ -1,5 +1,6 @@
 package com.cj.genieq.passage.repository;
 
+import com.cj.genieq.member.entity.MemberEntity;
 import com.cj.genieq.passage.entity.PassageEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -83,4 +84,7 @@ public interface PassageRepository extends JpaRepository<PassageEntity,Long> {
     @Modifying
     @Query("UPDATE PassageEntity p SET p.title = :title WHERE p.pasCode = :pasCode")
     int updateTitleByPasCode(@Param("pasCode") Long pasCode, @Param("title") String title);
+
+    @Query("SELECT COUNT(p) FROM PassageEntity p WHERE p.member.memCode = :memCode AND p.isDeleted = :isDeleted")
+    int countByMemberAndIsDeleted(@Param("memCode") Long memCode, @Param("isDeleted") Integer isDeleted);
 }
