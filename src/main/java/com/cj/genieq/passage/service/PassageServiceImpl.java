@@ -363,6 +363,7 @@ public class PassageServiceImpl implements PassageService {
         List<PassageStorageEachResponseDto> passages = passageEntities.stream()
                 .filter(p -> p.getIsDeleted() == 0) // isDeleted = 0 필터링
                 .map(p -> PassageStorageEachResponseDto.builder()
+                        .pasCode(p.getPasCode())
                         .title(p.getTitle())
                         .keyword(p.getKeyword())
                         .isGenerated(p.getIsGenerated())
