@@ -51,10 +51,6 @@ public class TestMemberController {
                 typePassage + " 분야에서 " + keyword + "의 핵심 논점입니다. 생성 시간: " + currentTime
         );
 
-        // (추가) 응답에 요청된 타입과 키워드 값을 포함
-        response.put("type", typePassage);
-        response.put("keyword", keyword);
-
         System.out.println("[DummyApiController] 지문 생성 응답 전송: " + response);
         return ResponseEntity.ok(response);
     }
