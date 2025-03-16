@@ -9,22 +9,23 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class TxtService {
 
+    private String stripHtmlTags(String html) {
+        if (html == null || html.isEmpty()) {
+            return "";
+        }
+        // HTML 태그 제거 정규식
+        return html.replaceAll("<[^>]*>", "");
+    }
+
     public byte[] createTxtFromDto(PassageWithQuestionsResponseDto dto) {
         StringBuilder sb = new StringBuilder();
 
         // ✅ 제목 작성
         sb.append("제목: ").append(dto.getTitle()).append("\n");
-        sb.append("유형: ").append(dto.getType()).append("\n");
-        sb.append("키워드: ").append(dto.getKeyword()).append("\n");
-        sb.append("\n");
 
         // ✅ 본문 작성
         sb.append("[내용]").append("\n");
-        sb.append(dto.getContent()).append("\n\n");
-
-        // ✅ 요지 작성
-        sb.append("[요지]").append("\n");
-        sb.append(dto.getGist()).append("\n\n");
+        sb.append(stripHtmlTags(dto.getContent())).append("\n\n");
 
         // ✅ 문제 작성
         if (dto.getQuestions() != null && !dto.getQuestions().isEmpty()) {

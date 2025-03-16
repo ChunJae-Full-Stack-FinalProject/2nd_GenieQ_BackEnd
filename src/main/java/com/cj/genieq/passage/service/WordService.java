@@ -11,6 +11,14 @@ import java.io.ByteArrayOutputStream;
 @Service
 public class WordService {
 
+    private String stripHtmlTags(String html) {
+        if (html == null || html.isEmpty()) {
+            return "";
+        }
+        // HTML 태그 제거 정규식
+        return html.replaceAll("<[^>]*>", "");
+    }
+
     public byte[] createWordFromDto(PassageWithQuestionsResponseDto dto) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             // ✅ Word 문서 생성
@@ -24,17 +32,6 @@ public class WordService {
             titleRun.setFontSize(14);
             titleParagraph.setSpacingAfter(200); // 줄 간격 설정
 
-            // ✅ 유형 및 키워드 작성
-            XWPFParagraph typeParagraph = document.createParagraph();
-            XWPFRun typeRun = typeParagraph.createRun();
-            typeRun.setText("유형: " + dto.getType());
-            typeRun.setFontSize(12);
-
-            XWPFParagraph keywordParagraph = document.createParagraph();
-            XWPFRun keywordRun = keywordParagraph.createRun();
-            keywordRun.setText("키워드: " + dto.getKeyword());
-            keywordRun.setFontSize(12);
-
             // ✅ 본문 작성 (Bold 처리)
             XWPFParagraph contentTitleParagraph = document.createParagraph();
             XWPFRun contentTitleRun = contentTitleParagraph.createRun();
@@ -44,20 +41,8 @@ public class WordService {
 
             XWPFParagraph contentParagraph = document.createParagraph();
             XWPFRun contentRun = contentParagraph.createRun();
-            contentRun.setText(dto.getContent());
+            contentRun.setText(stripHtmlTags(dto.getContent()));
             contentRun.setFontSize(12);
-
-            // ✅ 요지 작성 (Bold 처리)
-            XWPFParagraph gistTitleParagraph = document.createParagraph();
-            XWPFRun gistTitleRun = gistTitleParagraph.createRun();
-            gistTitleRun.setText("[요지]");
-            gistTitleRun.setBold(true);
-            gistTitleRun.setFontSize(12);
-
-            XWPFParagraph gistParagraph = document.createParagraph();
-            XWPFRun gistRun = gistParagraph.createRun();
-            gistRun.setText(dto.getGist());
-            gistRun.setFontSize(12);
 
             // ✅ 문제 작성
             if (dto.getQuestions() != null && !dto.getQuestions().isEmpty()) {

@@ -22,6 +22,13 @@ public class PdfService {
     // ✅ 폰트 경로 설정
     private static final String FONT_PATH = "src/main/resources/fonts/NanumGothic.ttf";
 
+    private String stripHtmlTags(String html) {
+        if (html == null || html.isEmpty()) {
+            return "";
+        }
+        // HTML 태그 제거 정규식
+        return html.replaceAll("<[^>]*>", "");
+    }
 
     public byte[] createPdfFromDto(PassageWithQuestionsResponseDto dto) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
@@ -34,39 +41,31 @@ public class PdfService {
             document.setFont(font);
 
             // ✅ 제목 출력 (Bold)
-            Text title = new Text("제목: " + dto.getTitle());
+            Text title = new Text("제목: " + stripHtmlTags(dto.getTitle()));
             document.add(new Paragraph(title));
 
-            // ✅ 유형 및 키워드 출력
-            document.add(new Paragraph("유형: " + dto.getType()));
-            document.add(new Paragraph("키워드: " + dto.getKeyword()));
-
-            // ✅ 본문 출력 (Bold)
+            // ✅ 본문 출력 (Bold) - HTML 태그 제거
             document.add(new Paragraph(new Text("\n[내용]")));
-            document.add(new Paragraph(dto.getContent()));
-
-            // ✅ 요지 출력 (Bold)
-            document.add(new Paragraph(new Text("\n[요지]")));
-            document.add(new Paragraph(dto.getGist()));
+            document.add(new Paragraph(stripHtmlTags(dto.getContent())));
 
             // ✅ 문제 출력
             if (dto.getQuestions() != null && !dto.getQuestions().isEmpty()) {
                 document.add(new Paragraph(new Text("\n[문제]")));
 
                 for (QuestionSelectResponseDto question : dto.getQuestions()) {
-                    // ✅ 문제 출력 (Bold)
-                    Text questionText = new Text("\nQ: " + question.getQueQuery());
+                    // ✅ 문제 출력 (Bold) - HTML 태그 제거
+                    Text questionText = new Text("\nQ: " + stripHtmlTags(question.getQueQuery()));
                     document.add(new Paragraph(questionText));
 
-                    // ✅ 선택지 출력
+                    // ✅ 선택지 출력 - HTML 태그 제거
                     List list = new List();
                     for (String option : question.getQueOption()) {
-                        list.add(new ListItem(option));
+                        list.add(new ListItem(stripHtmlTags(option)));
                     }
                     document.add(list);
 
-                    // ✅ 정답 출력 (Italic)
-                    Text answerText = new Text("정답: " + question.getQueAnswer());
+                    // ✅ 정답 출력 (Italic) - HTML 태그 제거
+                    Text answerText = new Text("정답: " + stripHtmlTags(question.getQueAnswer()));
                     document.add(new Paragraph(answerText));
                 }
             }
