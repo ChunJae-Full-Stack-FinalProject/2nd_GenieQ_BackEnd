@@ -21,7 +21,7 @@ public class TestMemberController {
     // (수정) 더 구체적인 경로를 상위에 배치하여 패턴 충돌 방지
     @PostMapping("/generate-passage")
     public ResponseEntity<Map<String, Object>> generatePassage(@RequestBody Map<String, Object> requestBody) {
-        System.out.println("[DummyApiController] 지문 생성 요청 받음: " + requestBody);
+//        System.out.println("[DummyApiController] 지문 생성 요청 받음: " + requestBody);
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -51,14 +51,14 @@ public class TestMemberController {
                 typePassage + " 분야에서 " + keyword + "의 핵심 논점입니다. 생성 시간: " + currentTime
         );
 
-        System.out.println("[DummyApiController] 지문 생성 응답 전송: " + response);
+//        System.out.println("[DummyApiController] 지문 생성 응답 전송: " + response);
         return ResponseEntity.ok(response);
     }
 
     // (수정) 더 구체적인 경로를 상위에 배치하여 패턴 충돌 방지
     @PostMapping("/generate-question")
     public ResponseEntity<Map<String, Object>> generateQuestion(@RequestBody Map<String, Object> requestBody) {
-        System.out.println("[DummyApiController] 문항 생성 요청 받음: " + requestBody);
+//        System.out.println("[DummyApiController] 문항 생성 요청 받음: " + requestBody);
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -87,14 +87,14 @@ public class TestMemberController {
         response.put("generated_answer", "②");
         response.put("generated_description", "정답은 두 번째 선택지입니다. 이유: " + typeQuestion + ", " + typeQuestionDetail + ", 시간: " + currentTime);
 
-        System.out.println("[DummyApiController] 문항 생성 응답 전송: " + response);
+//        System.out.println("[DummyApiController] 문항 생성 응답 전송: " + response);
         return ResponseEntity.ok(response);
     }
 
     // (추가) 타입/키워드 정보 API 추가
     @PostMapping("/get-type-keyword")
     public ResponseEntity<Map<String, Object>> getTypeKeyword(@RequestBody Map<String, Object> requestBody) {
-        System.out.println("[DummyApiController] 타입/키워드 정보 요청 받음: " + requestBody);
+        // System.out.println("[DummyApiController] 타입/키워드 정보 요청 받음: " + requestBody);
 
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -105,7 +105,7 @@ public class TestMemberController {
         response.put("type_passage", "인문");
         response.put("keyword", "키워드_" + currentTime.substring(11).replace(":", ""));
 
-        System.out.println("[DummyApiController] 타입/키워드 정보 응답 전송: " + response);
+        // System.out.println("[DummyApiController] 타입/키워드 정보 응답 전송: " + response);
         return ResponseEntity.ok(response);
     }
 

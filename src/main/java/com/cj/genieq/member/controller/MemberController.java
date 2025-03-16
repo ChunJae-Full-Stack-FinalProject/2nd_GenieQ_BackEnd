@@ -120,14 +120,14 @@ public class MemberController {
             @RequestBody UpdatePasswordRequestDto updatePasswordRequestDto,
             HttpSession session
             ){
-        System.out.println("start");
+        // System.out.println("start");
         infoService.updatePassword(
                 updatePasswordRequestDto.getCurrentPassword(),
                 updatePasswordRequestDto.getNewPassword(),
                 updatePasswordRequestDto.getConfirmPassword(),
                 session
         );
-        System.out.println("end");
+        // System.out.println("end");
         return ResponseEntity.ok("비밀번호 수정 완료");
     }
 

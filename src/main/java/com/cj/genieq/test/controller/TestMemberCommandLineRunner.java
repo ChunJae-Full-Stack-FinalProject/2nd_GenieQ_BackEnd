@@ -20,17 +20,17 @@ class TestMemberCommandLineRunner implements CommandLineRunner {
         String name = "";
 
         while(!name.equals("q")) {
-            System.out.print("DB에 저장시킬 이름을 입력해주세요 (종료: q): ");
+             System.out.print("DB에 저장시킬 이름을 입력해주세요 (종료: q): ");
             name = sc.next();
             sc.nextLine(); // 버퍼 비우기
 
             if(!name.equals("q")) {
                 TestMember member = TestMember.builder().name(name).build();
                 TestMember savedMember = service.saveMember(member);
-                System.out.println(name + " 저장 완료! 생성된 멤버 코드: " + savedMember.getMemberCode());
+                // System.out.println(name + " 저장 완료! 생성된 멤버 코드: " + savedMember.getMemberCode());
             }
         }
         sc.close();
-        System.out.println("CLI 테스트 종료.");
+        // System.out.println("CLI 테스트 종료.");
     }
 }

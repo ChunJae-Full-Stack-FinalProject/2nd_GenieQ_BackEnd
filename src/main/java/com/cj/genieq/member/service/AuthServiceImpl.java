@@ -85,13 +85,13 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void withdraw(String memEmail,  HttpSession session){
         //이메일로 사용자 조회
-        System.out.println("start");
+        // System.out.println("start");
         MemberEntity member = memberRepository.findByMemEmail(memEmail)
                 .orElseThrow(()-> new IllegalArgumentException("회원이 존재하지 않습니다."));
-        System.out.println("mid");
+        // System.out.println("mid");
         member.setMemIsDeleted(1);
         memberRepository.save(member);
-        System.out.println("end");
+        // System.out.println("end");
         session.invalidate(); //세션 만료 처리
     }
 
