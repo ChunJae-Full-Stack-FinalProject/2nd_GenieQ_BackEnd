@@ -20,7 +20,7 @@ import java.io.ByteArrayOutputStream;
 public class PdfService {
 
     // ✅ 폰트 경로 설정
-    private static final String FONT_PATH = "src/main/resources/fonts/NanumGothic.ttf";
+    private static final String FONT_PATH = "src/main/resources/fonts/BookkMyungjo_Light.ttf";
 
     private String stripHtmlTags(String html) {
         if (html == null || html.isEmpty()) {
