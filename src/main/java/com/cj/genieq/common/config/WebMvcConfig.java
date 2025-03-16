@@ -31,6 +31,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/favo/**", "/form/**", "/ques/**", "/noti/**") // 인증이 필요한 경로
                 .excludePathPatterns("/api/auth/select/login", "/api/auth/insert/signup",
                         "/api/auth/select/email", "/api/auth/update/temporal",
-                        "/swagger-ui/**", "/v3/api-docs/**"); // 인증이 필요 없는 경로
+                        "/swagger-ui/**", "/v3/api-docs/**", "/api/test/**"); // 인증이 필요 없는 경로
     }
 }
