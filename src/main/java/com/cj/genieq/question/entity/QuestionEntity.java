@@ -35,6 +35,9 @@ public class QuestionEntity {
     @Column(name = "QUE_ANSWER")
     private String queAnswer; // 정답
 
+    @Column(name = "QUE_DESCRIPTION")
+    private String queDescription; // 정답
+
     // 지문과의 매핑 (다대일 관계)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PAS_CODE")

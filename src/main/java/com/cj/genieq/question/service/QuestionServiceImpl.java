@@ -24,6 +24,7 @@ public class QuestionServiceImpl implements QuestionService {
                         .queQuery(q.getQueQuery())
                         .queOption(String.join(",", q.getQueOption())) // JSON → String 변환 후 저장
                         .queAnswer(q.getQueAnswer())
+                        .queDescription(q.getDescription())
                         .passage(savedPassage) // 지문 코드 매핑
                         .build())
                 .collect(Collectors.toList());
@@ -38,6 +39,7 @@ public class QuestionServiceImpl implements QuestionService {
                         .queQuery(q.getQueQuery())
                         .queOption(List.of(q.getQueOption().split(",")))
                         .queAnswer(q.getQueAnswer())
+                        .description(q.getQueDescription())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -54,6 +56,7 @@ public class QuestionServiceImpl implements QuestionService {
                         .queOption(String.join(",", q.getQueOption()))
                         .queAnswer(q.getQueAnswer())
                         .passage(passage) // 지문 매핑
+                        .queDescription(q.getDescription())
                         .build())
                 .collect(Collectors.toList());
 
@@ -66,6 +69,7 @@ public class QuestionServiceImpl implements QuestionService {
                         .queQuery(q.getQueQuery())
                         .queOption(List.of(q.getQueOption().split(",")))
                         .queAnswer(q.getQueAnswer())
+                        .description(q.getQueDescription())
                         .build())
                 .collect(Collectors.toList());
 

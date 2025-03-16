@@ -253,6 +253,7 @@ public class PassageServiceImpl implements PassageService {
                         .queQuery(q.getQueQuery())
                         .queOption(q.getQueOption() != null ? List.of(q.getQueOption().split(",")) : new ArrayList<>()) // String → JSON 변환
                         .queAnswer(q.getQueAnswer())
+                        .description(q.getQueDescription())
                         .build())
                 .collect(Collectors.toList())
                 : new ArrayList<>();
@@ -307,6 +308,7 @@ public class PassageServiceImpl implements PassageService {
                         .queQuery(q.getQueQuery())
                         .queOption(q.getQueOption())
                         .queAnswer(q.getQueAnswer())
+                        .description(q.getDescription())
                         .build())
                 .collect(Collectors.toList());
 

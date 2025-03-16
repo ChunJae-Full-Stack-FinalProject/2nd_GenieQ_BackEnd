@@ -18,4 +18,5 @@ public class QuestionSelectResponseDto {
     private String queQuery;
     private List<String> queOption;
     private String queAnswer;
+    private String description; //해설
 }
