@@ -301,6 +301,8 @@ public class PassageServiceImpl implements PassageService {
             passage.setIsGenerated(requestDto.getIsGenerated());
         }
 
+        passage.setDate(LocalDateTime.now());
+
         // INSERT → UPDATE 변환 처리 추가
         List<QuestionUpdateRequestDto> questionDtos = requestDto.getQuestions().stream()
                 .map(q -> QuestionUpdateRequestDto.builder()
