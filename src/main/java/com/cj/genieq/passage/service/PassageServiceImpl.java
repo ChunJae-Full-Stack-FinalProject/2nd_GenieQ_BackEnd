@@ -381,6 +381,7 @@ public class PassageServiceImpl implements PassageService {
     @Override
     public List<PassageStorageEachResponseDto> selectRecentList(Long memCode) {
         List<PassageEntity> passageEntities = passageRepository.selectTop150RecentPassages(memCode);
+        System.out.println("받아온 데이터 크기:"+passageEntities.toArray().length);
 
         // 조회 결과가 없으면 빈 리스트 반환
         if (passageEntities == null || passageEntities.isEmpty()) {

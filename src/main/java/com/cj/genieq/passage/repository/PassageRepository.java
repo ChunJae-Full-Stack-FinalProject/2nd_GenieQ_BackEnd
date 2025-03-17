@@ -2,6 +2,7 @@ package com.cj.genieq.passage.repository;
 
 import com.cj.genieq.member.entity.MemberEntity;
 import com.cj.genieq.passage.entity.PassageEntity;
+import com.itextpdf.commons.utils.JsonUtil;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -67,12 +68,13 @@ public interface PassageRepository extends JpaRepository<PassageEntity,Long> {
     // 최근 작업 150개 리스트
     @Query(value = "SELECT * FROM ( " +
             "    SELECT p.* FROM PASSAGE p " +
-            "    WHERE p.MEM_CODE = :memCode " +
+            "    WHERE p.MEM_CODE = :memCode AND p.PAS_IS_DELETED = 0" +
             "    ORDER BY p.PAS_DATE DESC " +
             ") WHERE ROWNUM <= 150", nativeQuery = true)
     List<PassageEntity> selectTop150RecentPassages(
             @Param("memCode") Long memCode
     );
+
 
     @Modifying
     @Query("UPDATE PassageEntity p " +
