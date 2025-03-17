@@ -35,6 +35,7 @@ public class QuestionEntity {
     @Column(name = "QUE_ANSWER")
     private String queAnswer; // 정답
 
+    @Lob
     @Column(name = "QUE_DESCRIPTION")
     private String queDescription; // 정답
 
