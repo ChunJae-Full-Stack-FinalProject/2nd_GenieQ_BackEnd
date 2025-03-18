@@ -143,10 +143,13 @@ public class PassageController {
 
     // 지문 + 문항 수정
     @PutMapping("/ques/update/{pasCode}")
-    public ResponseEntity<PassageWithQuestionsResponseDto> updatePassage(
+    public ResponseEntity<PassageWithQuestionsResponseDto> updatePassage(HttpSession session,
             @PathVariable Long pasCode,
             @RequestBody PassageWithQuestionsRequestDto requestDto) {
-        PassageWithQuestionsResponseDto updatedPassage = passageService.updatePassage(pasCode, requestDto);
+        // 세션에서 로그인 사용자 정보를 가져옴
+        LoginMemberResponseDto loginMember = (LoginMemberResponseDto) session.getAttribute("LOGIN_USER");
+
+        PassageWithQuestionsResponseDto updatedPassage = passageService.updatePassage(loginMember.getMemberCode(), pasCode, requestDto);
         return ResponseEntity.ok(updatedPassage);
 
     }

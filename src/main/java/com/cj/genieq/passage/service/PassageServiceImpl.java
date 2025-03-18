@@ -277,7 +277,11 @@ public class PassageServiceImpl implements PassageService {
 
     //지문 수정 + 문항 수정
     @Transactional
-    public PassageWithQuestionsResponseDto updatePassage(Long pasCode, PassageWithQuestionsRequestDto requestDto) {
+    public PassageWithQuestionsResponseDto updatePassage(Long memCode, Long pasCode, PassageWithQuestionsRequestDto requestDto) {
+        //회원조회
+        MemberEntity member = memberRepository.findById(memCode)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+
         // 1. 기존 지문 조회
         PassageEntity passage = passageRepository.findById(pasCode)
                 .orElseThrow(() -> new IllegalArgumentException("지문이 존재하지 않습니다."));
@@ -317,6 +321,11 @@ public class PassageServiceImpl implements PassageService {
 
         //문항 수정 후 반환된 값 받아서 그대로 사용
         List<QuestionSelectResponseDto> updatedQuestions = questionService.updateQuestions(passage, questionDtos);
+
+        // ✅ mode가 "generate" 또는 "recreate"일 때만 차감 (수정 시에는 차감 X)
+        if ("generate".equals(requestDto.getMode()) || "recreate".equals(requestDto.getMode())) {
+            usageService.updateUsage(memCode, -1, "문항 생성");
+        }
 
         // 응답 DTO 생성 후 변수에 저장
         PassageWithQuestionsResponseDto responseDto = PassageWithQuestionsResponseDto.builder()
