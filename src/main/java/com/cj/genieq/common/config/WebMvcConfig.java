@@ -18,7 +18,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins( "http://localhost:5173","http://localhost:5174","http://localhost:80")// Vue 프로젝트의 개발 서버 주소
+                .allowedOrigins( "http://localhost:5173","http://localhost:5174","http://localhost:80","http://localhost","http://localhost:443")// Vue 프로젝트의 개발 서버 주소
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
                 .exposedHeaders("Content-Disposition") // 파일 이름 추출 허용

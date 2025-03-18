@@ -134,6 +134,7 @@ public class PassageServiceImpl implements PassageService {
                             .subjectKeyword(passage.getKeyword()) // 지문 키워드
                             .date(date) // 날짜 처리
                             .content(passage.getContent())
+                            .gist(passage.getGist())
                             .favorite(passage.getIsFavorite()) // 즐겨찾기 상태
                             .build();
                 })
@@ -305,6 +306,8 @@ public class PassageServiceImpl implements PassageService {
             passage.setIsGenerated(requestDto.getIsGenerated());
         }
 
+        passage.setDate(LocalDateTime.now());
+
         // INSERT → UPDATE 변환 처리 추가
         List<QuestionUpdateRequestDto> questionDtos = requestDto.getQuestions().stream()
                 .map(q -> QuestionUpdateRequestDto.builder()
@@ -390,6 +393,7 @@ public class PassageServiceImpl implements PassageService {
     @Override
     public List<PassageStorageEachResponseDto> selectRecentList(Long memCode) {
         List<PassageEntity> passageEntities = passageRepository.selectTop150RecentPassages(memCode);
+        System.out.println("받아온 데이터 크기:"+passageEntities.toArray().length);
 
         // 조회 결과가 없으면 빈 리스트 반환
         if (passageEntities == null || passageEntities.isEmpty()) {

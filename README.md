@@ -17,7 +17,7 @@
     screen -r genieq      # 'genieq' 라는 기존 세션으로 다시 접속
    [ ctrl + c ]          # 실행 중인 애플리케이션을 Ctrl+C로 종료
    
-   java -Duser.timezone=UTC -jar (jar파일 경로)   # 새 JAR 파일로 애플리케이션 다시 실행, timezone 오류로 직접 설정해서 실행
+   java -Duser.timezone=UTC -jar genieq-0.0.1-SNAPSHOT.jar   # 새 JAR 파일로 애플리케이션 다시 실행, timezone 오류로 직접 설정해서 실행
    
    [ Ctrl + A ] -> D     # 눌러 세션 분리
    ```
