@@ -12,6 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -45,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers("/ques/**").permitAll() // 문항
                         .requestMatchers("/noti/**").permitAll() // 공지
                         .requestMatchers("/api/usag/**").permitAll() // 이용내역
+                        .requestMatchers("/api/session/**").permitAll() // 세션 관리 API 허용
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
                 )
                 .build();
@@ -68,5 +70,10 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
     }
 }
