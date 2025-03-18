@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -26,14 +27,14 @@ public class TestMemberController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         String typePassage = (String) requestBody.getOrDefault("type_passage", "[type_passage(지문 유형) 값을 받아오지 못했습니다.]");
-        String keyword = (String) requestBody.getOrDefault("keyword", "[keyword(지문 제재) 값을 받아오지 못했습니다.]");
+        List<String> keyword = (List<String>) requestBody.getOrDefault("keyword", "[keyword(지문 제재) 값을 받아오지 못했습니다.]");
         String currentTime = now.format(formatter);
 
         Map<String, Object> response = new HashMap<>();
 
         // 기본 지문 내용
         response.put("generated_passage",
-                "이것은 " + typePassage + " 분야의 " + keyword + "에 대한 더미 지문입니다. " +
+                "이것은 " + typePassage + " 분야의 " + keyword.toString() + "에 대한 더미 지문입니다. " +
                         "요청 시간: " + currentTime + ". \n\\n\\\n" +
                         "이 줄은 개행 기호 정규 표현식 '슬래시 n'가 문장 끝에 두개 붙어있습니다.\n\n" +
                         "이 줄은 개행 기호 정규 표현식 '슬래시 n'가 문장 끝에 두개 붙어있습니다.\n\n" +
@@ -48,7 +49,7 @@ public class TestMemberController {
 
         // 핵심 논점은 문자열로 제공
         response.put("generated_core_point",
-                typePassage + " 분야에서 " + keyword + "의 핵심 논점입니다. 생성 시간: " + currentTime
+                typePassage + " 분야에서 " + keyword.toString() + "의 핵심 논점입니다. 생성 시간: " + currentTime
         );
 
 //        System.out.println("[DummyApiController] 지문 생성 응답 전송: " + response);
