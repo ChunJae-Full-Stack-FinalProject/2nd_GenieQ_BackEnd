@@ -17,5 +17,6 @@ public class PassagePreviewListDto {
     private String subjectKeyword;
     private LocalDate date;
     private String content;
+    private String gist;
     private Integer favorite;
 }
