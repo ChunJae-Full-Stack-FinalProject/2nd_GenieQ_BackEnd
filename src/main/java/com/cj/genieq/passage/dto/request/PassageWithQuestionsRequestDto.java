@@ -24,4 +24,5 @@ public class PassageWithQuestionsRequestDto {
     private Integer isGenerated;
     private List<QuestionInsertRequestDto> questions;
 
+    private String mode;
 }
