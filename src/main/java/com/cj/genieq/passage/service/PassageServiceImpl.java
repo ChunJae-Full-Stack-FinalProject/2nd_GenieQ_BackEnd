@@ -134,6 +134,7 @@ public class PassageServiceImpl implements PassageService {
                             .subjectKeyword(passage.getKeyword()) // 지문 키워드
                             .date(date) // 날짜 처리
                             .content(passage.getContent())
+                            .gist(passage.getGist())
                             .favorite(passage.getIsFavorite()) // 즐겨찾기 상태
                             .build();
                 })
@@ -300,6 +301,8 @@ public class PassageServiceImpl implements PassageService {
         if (requestDto.getIsGenerated() != null) {
             passage.setIsGenerated(requestDto.getIsGenerated());
         }
+
+        passage.setDate(LocalDateTime.now());
 
         // INSERT → UPDATE 변환 처리 추가
         List<QuestionUpdateRequestDto> questionDtos = requestDto.getQuestions().stream()

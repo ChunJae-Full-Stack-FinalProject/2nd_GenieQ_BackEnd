@@ -41,6 +41,7 @@ public class PassageEntity {
     @Column(name = "PAS_CONTENT")
     private String content;
 
+    @Lob
     @Column(name = "PAS_GIST")
     private String gist;
 
