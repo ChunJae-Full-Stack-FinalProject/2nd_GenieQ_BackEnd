@@ -90,19 +90,23 @@ public class PassageServiceImpl implements PassageService {
         PassageEntity passage = passageRepository.findById(passageDto.getPasCode())
                 .orElseThrow(() -> new EntityNotFoundException("지문이 존재하지 않습니다."));
 
-        // 제목 중복 처리
-        String title = generateTitle(passageDto.getTitle());
+        // 2. 제목 수정이 발생한 경우에만 중복 검사 실행
+        String title = passage.getTitle(); // 기존 제목 유지
+        if (passageDto.getTitle() != null && !passage.getTitle().equals(passageDto.getTitle())) {
+            // 제목이 수정된 경우에만 중복 검사 실행
+            title = generateTitle(passageDto.getTitle());
+        }
 
-        // 2. 기존 지문 정보 수정
+        // 3. 기존 지문 정보 수정
         passage.setTitle(title);
         passage.setContent(passageDto.getContent());
         passage.setDate(LocalDateTime.now());
 
-        // 3. 지문 수정 후 저장
+        // 4. 지문 수정 후 저장
         PassageEntity updatedPassage = passageRepository.save(passage);
 
-        // 4. 응답용 DTO 생성
-        PassageSelectResponseDto selectedPassage = PassageSelectResponseDto.builder()
+        // 5. 응답용 DTO 생성
+        return PassageSelectResponseDto.builder()
                 .pasCode(updatedPassage.getPasCode())
                 .title(updatedPassage.getTitle())
                 .type(updatedPassage.getPasType())
@@ -110,9 +114,8 @@ public class PassageServiceImpl implements PassageService {
                 .content(updatedPassage.getContent())
                 .gist(updatedPassage.getGist())
                 .build();
-
-        return selectedPassage;
     }
+
 
     // 지문 미리보기 리스트
     @Override
