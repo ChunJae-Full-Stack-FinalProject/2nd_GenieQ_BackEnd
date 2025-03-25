@@ -36,7 +36,7 @@ public interface PassageRepository extends JpaRepository<PassageEntity,Long> {
     boolean existsByTitle(@Param("title") String title);
     
     // 지문 미리보기 리스트
-    @Query("SELECT p FROM PassageEntity p WHERE p.member.memCode = :memCode AND p.isGenerated = 1 ORDER BY p.date DESC")
+    @Query("SELECT p FROM PassageEntity p WHERE p.member.memCode = :memCode AND p.isGenerated = 1 AND p.isDeleted=0 ORDER BY p.date DESC")
     List<PassageEntity> findGeneratedPassagesByMember(@Param("memCode") Long memCode);
 
     // 자료실 메인에서 즐겨찾기/최근 작업 리스트
