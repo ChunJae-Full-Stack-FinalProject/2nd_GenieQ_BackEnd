@@ -28,6 +28,7 @@ public class TestMemberController {
 
         String typePassage = (String) requestBody.getOrDefault("type_passage", "[type_passage(지문 유형) 값을 받아오지 못했습니다.]");
         List<String> keyword = (List<String>) requestBody.getOrDefault("keyword", "[keyword(지문 제재) 값을 받아오지 못했습니다.]");
+        String errorMsg = (String) requestBody.getOrDefault("errorMsg", "[errorMsg 내용을 받아오지 못했습니다.]");
         String currentTime = now.format(formatter);
 
         Map<String, Object> response = new HashMap<>();
@@ -35,16 +36,9 @@ public class TestMemberController {
         // 기본 지문 내용
         response.put("generated_passage",
                 "이것은 " + typePassage + " 분야의 " + keyword.toString() + "에 대한 더미 지문입니다. " +
-                        "요청 시간: " + currentTime + ". \n\\n\\\n" +
-                        "이 줄은 개행 기호 정규 표현식 '슬래시 n'가 문장 끝에 두개 붙어있습니다.\n\n" +
-                        "이 줄은 개행 기호 정규 표현식 '슬래시 n'가 문장 끝에 두개 붙어있습니다.\n\n" +
-                        "이 줄은 개행 기호 정규 표현식 '슬래시 n'가 문장 끝에 두개 붙어있습니다.\n\n" +
-                        "이 줄은 개행 기호 정규 표현식 '슬래시 슬래시 n'가 문장 끝에 두개 붙어있습니다.\\n\\n" +
-                        "이 줄은 개행 기호 정규 표현식 '슬래시 슬래시 n'가 문장 끝에 두개 붙어있습니다.\\n\\n" +
-                        "이 줄은 개행 기호 정규 표현식 '슬래시 슬래시 n'가 문장 끝에 두개 붙어있습니다.\\n\\n" +
-                        "이 줄은 개행 기호 정규 표현식 '슬래시 슬래스 슬래시 n'가 문장 끝에 두개 붙어있습니다.\\\n\\\n"+
-                        "이 줄은 개행 기호 정규 표현식 '슬래시 슬래스 슬래시 n'가 문장 끝에 두개 붙어있습니다.\\\n\\\n"+
-                        "이 줄은 개행 기호 정규 표현식 '슬래시 슬래스 슬래시 n'가 문장 끝에 두개 붙어있습니다.\\\n\\\n"
+                        "요청 시간: " + currentTime + ". \n\n" +
+                "현재 와이파이 오류 or AI 서비스에 오류가 발생했습니다. 다음 메세지를 복사하여 개발자에게 알려주세요.\n\n" +
+                "errorMsg: "+ errorMsg
         );
 
         // 핵심 논점은 문자열로 제공
