@@ -28,7 +28,7 @@ public class TestMemberController {
 
         String typePassage = (String) requestBody.getOrDefault("type_passage", "[type_passage(지문 유형) 값을 받아오지 못했습니다.]");
         List<String> keyword = (List<String>) requestBody.getOrDefault("keyword", "[keyword(지문 제재) 값을 받아오지 못했습니다.]");
-        String errorMsg = (String) requestBody.getOrDefault("errorMsg", "[errorMsg 내용을 받아오지 못했습니다.]");
+        Object errorMsg = (Object) requestBody.getOrDefault("errorMsg", "[errorMsg 내용을 받아오지 못했습니다.]");
         String currentTime = now.format(formatter);
 
         Map<String, Object> response = new HashMap<>();
@@ -37,8 +37,8 @@ public class TestMemberController {
         response.put("generated_passage",
                 "이것은 " + typePassage + " 분야의 " + keyword.toString() + "에 대한 더미 지문입니다. " +
                         "요청 시간: " + currentTime + ". \n\n" +
-                "현재 와이파이 오류 or AI 서비스에 오류가 발생했습니다. 다음 메세지를 복사하여 개발자에게 알려주세요.\n\n" +
-                "errorMsg: "+ errorMsg
+                "현재 wifi 오류 or AI 서비스에 오류가 발생했습니다. 다음 메세지를 복사하여 관리자에게 문의해주세요.\n\n" +
+                "errorMsg: "+ errorMsg.toString()
         );
 
         // 핵심 논점은 문자열로 제공
