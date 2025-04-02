@@ -21,21 +21,34 @@ public class TxtService {
         StringBuilder sb = new StringBuilder();
 
         // ✅ 제목 작성
-        sb.append("제목: ").append(dto.getTitle()).append("\n");
+        sb.append("[작업 이름]").append("\n").append(dto.getTitle()).append("\n\n");
 
         // ✅ 본문 작성
-        sb.append("[내용]").append("\n");
+        sb.append("[지문]").append("\n");
         sb.append(stripHtmlTags(dto.getContent())).append("\n\n");
 
         // ✅ 문제 작성
         if (dto.getQuestions() != null && !dto.getQuestions().isEmpty()) {
-            sb.append("[문제]").append("\n");
+            sb.append("[문항] ").append("\n");
+            int num = 1;
             for (QuestionSelectResponseDto question : dto.getQuestions()) {
-                sb.append("Q: ").append(question.getQueQuery()).append("\n");
+                sb.append(num).append(". ").append(stripHtmlTags(question.getQueQuery())).append("\n");
+
+                String[] optionNums = {"①","②","③","④","⑤"};
+                int optionNum = 0;
                 for (String option : question.getQueOption()) {
-                    sb.append(" - ").append(option).append("\n");
+                    String prefix = optionNums[optionNum];
+                    sb.append(prefix).append(" ").append(stripHtmlTags(option)).append("\n");
+                    optionNum++;
                 }
-                sb.append("정답: ").append(question.getQueAnswer()).append("\n\n");
+
+                sb.append("정답: ").append(question.getQueAnswer()).append("\n");
+                if (question.getDescription() != null && !question.getDescription().isEmpty()) {
+                    sb.append("해설 : ").append(stripHtmlTags(question.getDescription())).append("\n");
+                }
+
+                sb.append("\n");
+                num++;
             }
         }
 
