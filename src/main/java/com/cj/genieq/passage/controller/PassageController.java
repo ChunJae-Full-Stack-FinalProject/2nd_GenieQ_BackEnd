@@ -16,8 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.dao.DataAccessException;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -287,7 +287,7 @@ public class PassageController {
                 throw new IllegalArgumentException("해당 pasCode에 대한 데이터를 찾을 수 없습니다 : " + pasCode);
             }
 
-            String fileName = createSafeFileName(responseDto.getTitle());
+            String fileName = responseDto.getTitle().trim();
             byte[] result = generateFile(responseDto, type);
 
             HttpHeaders headers = createHeaders(fileName, type);
@@ -304,12 +304,6 @@ public class PassageController {
         }
     }
     
-    // 파일 이름 생성
-    private String createSafeFileName(String title) {
-        return title.replaceAll("[^a-zA-Z0-9가-힣_]", "") // 특수문자 제거
-                .replaceAll(" ", "_"); // 공백은 언더바로 변환
-    }
-    
     // 파일 생성
     private byte[] generateFile(PassageWithQuestionsResponseDto dto, String type) {
         return switch (type.toLowerCase()) {
@@ -321,7 +315,7 @@ public class PassageController {
     }
 
     // 파일 추출을 위한 httpheader 생성
-    private HttpHeaders createHeaders(String fileName, String type) {
+    private HttpHeaders createHeaders(String fileName, String type) throws UnsupportedEncodingException {
         HttpHeaders headers = new HttpHeaders();
 
         String extension;
@@ -343,12 +337,13 @@ public class PassageController {
             default -> throw new IllegalArgumentException("Unsupported file type: " + type);
         }
 
-        // ✅ 파일 이름을 UTF-8로 URL 인코딩
-        String encodedFileName = URLEncoder.encode(fileName + "." + extension, StandardCharsets.UTF_8)
-                .replaceAll("\\+", "%20"); // 공백을 `%20`으로 변환
+        // 파일 이름을 UTF-8로 URL 인코딩
+        String encodedFileName = URLEncoder.encode(fileName + "." + extension, "UTF-8").replace("+", "%20"); // 공백을 `%20`으로 변환
 
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"");
+        headers.setContentDispositionFormData("attachment", encodedFileName);
         headers.add(HttpHeaders.CONTENT_TYPE, contentType);
+
+        headers.add("Access-Control-Expose-Headers", "Content-Disposition");
 
         return headers;
     }
