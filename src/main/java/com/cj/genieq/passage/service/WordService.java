@@ -5,6 +5,7 @@ import com.cj.genieq.question.dto.response.QuestionSelectResponseDto;
 import org.apache.poi.xwpf.usermodel.*;
 
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBorder;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcBorders;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder;
 import org.springframework.stereotype.Service;
 
@@ -34,18 +35,40 @@ public class WordService {
             titleRun.setFontSize(10);
 
             // ✅ 본문 작성
-            // 본문을 감싸는 테이블 생성
             XWPFTable contentTable = document.createTable(1, 1);
 
             // 테이블 테두리 설정
             contentTable.setWidth("100%");
-            CTBorder border = CTBorder.Factory.newInstance();
-            border.setVal(STBorder.SINGLE);
-            border.setSz(BigInteger.valueOf(4)); // 테두리 두께
-            border.setColor("000000"); // 검은색 테두리
 
-            // 테이블 셀 여백 설정
+            // 테이블의 테두리 설정
             XWPFTableCell cell = contentTable.getRow(0).getCell(0);
+            CTTcBorders borders = cell.getCTTc().addNewTcPr().addNewTcBorders();
+
+            // 상단 테두리
+            CTBorder topBorder = borders.addNewTop();
+            topBorder.setVal(STBorder.SINGLE);
+            topBorder.setSz(BigInteger.valueOf(4));
+            topBorder.setColor("000000");
+
+            // 하단 테두리
+            CTBorder bottomBorder = borders.addNewBottom();
+            bottomBorder.setVal(STBorder.SINGLE);
+            bottomBorder.setSz(BigInteger.valueOf(4));
+            bottomBorder.setColor("000000");
+
+            // 좌측 테두리
+            CTBorder leftBorder = borders.addNewLeft();
+            leftBorder.setVal(STBorder.SINGLE);
+            leftBorder.setSz(BigInteger.valueOf(4));
+            leftBorder.setColor("000000");
+
+            // 우측 테두리
+            CTBorder rightBorder = borders.addNewRight();
+            rightBorder.setVal(STBorder.SINGLE);
+            rightBorder.setSz(BigInteger.valueOf(4));
+            rightBorder.setColor("000000");
+
+            // 셀 너비 설정
             cell.setWidth("100%");
 
             // 셀 안에 본문 텍스트 추가
@@ -81,6 +104,10 @@ public class WordService {
                         optionRun.setFontSize(10);
                         optionNum++;
                     }
+
+                    // 테이블 후 간격 추가
+                    spacingParagraph = document.createParagraph();
+                    spacingParagraph.setSpacingAfter(200);
 
                     // ✅ 정답 출력
                     XWPFParagraph answerParagraph = document.createParagraph();
