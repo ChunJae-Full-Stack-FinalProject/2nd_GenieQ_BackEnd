@@ -274,15 +274,34 @@ public class PassageController {
 
     // 파일 추출 (type: pdf/word/txt)
     @GetMapping("/export/each/{pasCode}")
-    public ResponseEntity<byte[]> generatePdf(@PathVariable("pasCode") Long pasCode, @RequestParam("type") String type) {
-        PassageWithQuestionsResponseDto responseDto = passageService.getPassageWithQuestions(pasCode);
+    public ResponseEntity<byte[]> generateFile(@PathVariable("pasCode") Long pasCode, @RequestParam("type") String type) {
+        try {
+            // pasCode 유효성 검사 추가
+            if (pasCode == null || pasCode <= 0) {
+                throw new IllegalArgumentException("유효하지 않은 pasCode입니다 : " + pasCode);
+            }
+            PassageWithQuestionsResponseDto responseDto = passageService.getPassageWithQuestions(pasCode);
 
-        String fileName = createSafeFileName(responseDto.getTitle());
-        byte[] result = generateFile(responseDto, type);
+            // 응답 데이터 유효성 검증
+            if (responseDto == null) {
+                throw new IllegalArgumentException("해당 pasCode에 대한 데이터를 찾을 수 없습니다 : " + pasCode);
+            }
 
-        HttpHeaders headers = createHeaders(fileName, type);
+            String fileName = createSafeFileName(responseDto.getTitle());
+            byte[] result = generateFile(responseDto, type);
 
-        return new ResponseEntity<>(result, headers, HttpStatus.OK);
+            HttpHeaders headers = createHeaders(fileName, type);
+
+            return new ResponseEntity<>(result, headers, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            // 에러 로그 기록
+            System.err.println("지문을 찾을 수 없음 : " + e.getMessage());
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            // 에러 로그 기록
+            System.err.println("파일 생성 오류 : " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
     
     // 파일 이름 생성
