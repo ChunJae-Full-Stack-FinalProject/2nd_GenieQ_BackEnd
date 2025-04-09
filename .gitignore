@@ -35,3 +35,4 @@ build/
 **/*merged.md
 src/main/resources/application-private.properties
 src/main/resources/initdata/acount.sql
+src/main/.gitignore

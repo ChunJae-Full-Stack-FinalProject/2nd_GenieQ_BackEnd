@@ -1,0 +1,28 @@
+
+# /resources/fonts
+# /resources/initdata
+# /resources/static
+# /resources/templates
+# /java/com/cj/genieq/test
+# # /java/com/cj/genieq/common
+# # /java/com/cj/genieq/
+# # /java/com/cj/genieq/usage
+# /java/com/cj/genieq/subject
+# # /java/com/cj/genieq/question
+# # /java/com/cj/genieq/payment
+# # /java/com/cj/genieq/passage
+# /java/com/cj/genieq/notice
+# /java/com/cj/genieq/format
+# # /java/com/cj/genieq/GenieqApplication.java
+
+# # /java/com/cj/genieq/member/service/AuthService.java
+# # /java/com/cj/genieq/member/service/InfoService.java
+# # /java/com/cj/genieq/usage/service/UsageService.java
+
+# /java/com/cj/genieq/member/dto
+# /java/com/cj/genieq/notice/dto
+# /java/com/cj/genieq/passage/dto
+# /java/com/cj/genieq/payment/dto
+# /java/com/cj/genieq/question/dto
+# /java/com/cj/genieq/test/dto
+# /java/com/cj/genieq/usage/dto
